@@ -16,4 +16,3 @@ export const appRoutes: Routes = [
   //   loadComponent: () => import("../modules/otra-ruta/otra-ruta.component").then((m) => m.OtraRutaComponent),
   // },
 ];
-
