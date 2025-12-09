@@ -10,9 +10,44 @@ export const appRoutes: Routes = [
     loadComponent: () =>
       import("../modules/home/home.component").then((m) => m.HomeComponent),
   },
-  // Aquí puedes agregar más rutas de tu aplicación
-  // {
-  //   path: "otra-ruta",
-  //   loadComponent: () => import("../modules/otra-ruta/otra-ruta.component").then((m) => m.OtraRutaComponent),
-  // },
+  {
+    path: "incomes",
+    loadComponent: () =>
+      import("../modules/incomes/incomes.component").then(
+        (m) => m.IncomesComponent
+      ),
+  },
+  {
+    path: "expenses",
+    loadComponent: () =>
+      import("../modules/expenses/expenses.component").then(
+        (m) => m.ExpensesComponent
+      ),
+  },
+  {
+    path: "categories",
+    loadComponent: () =>
+      import("../modules/categories/categories.component").then(
+        (m) => m.CategoriesComponent
+      ),
+  },
+  {
+    path: "accounts-receivable",
+    loadComponent: () =>
+      import(
+        "../modules/accounts-receivable/accounts-receivable.component"
+      ).then((m) => m.AccountsReceivableComponent),
+  },
+  {
+    path: "accounts-payable",
+    loadComponent: () =>
+      import("../modules/accounts-payable/accounts-payable.component").then(
+        (m) => m.AccountsPayableComponent
+      ),
+  },
+  {
+    path: "debts",
+    loadComponent: () =>
+      import("../modules/debts/debts.component").then((m) => m.DebtsComponent),
+  },
 ];

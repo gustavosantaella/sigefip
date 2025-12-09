@@ -1,94 +1,136 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title> Sigefip </ion-title>
+    <ion-title>SIGEFIP</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Sigefip</ion-title>
+      <ion-title size="large">SIGEFIP</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <div class="container">
+    <!-- Dashboard Summary -->
     <ion-card>
       <ion-card-header>
-        <ion-card-title>¡Bienvenido a Sigefip!</ion-card-title>
+        <ion-card-title>Resumen Financiero</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <p>Tu aplicación Angular con Capacitor e Ionic está lista.</p>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <div class="summary-item">
+                <h3>Balance</h3>
+                <p [class]="balance >= 0 ? 'positive' : 'negative'">
+                  {{ balance | number : "1.2-2" }}
+                </p>
+              </div>
+            </ion-col>
+            <ion-col size="6">
+              <div class="summary-item">
+                <h3>Ingresos</h3>
+                <p class="positive">{{ totalIncome | number : "1.2-2" }}</p>
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="6">
+              <div class="summary-item">
+                <h3>Egresos</h3>
+                <p class="negative">{{ totalExpense | number : "1.2-2" }}</p>
+              </div>
+            </ion-col>
+            <ion-col size="6">
+              <div class="summary-item">
+                <h3>Por Cobrar</h3>
+                <p class="positive">{{ totalReceivable | number : "1.2-2" }}</p>
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="6">
+              <div class="summary-item">
+                <h3>Por Pagar</h3>
+                <p class="negative">{{ totalPayable | number : "1.2-2" }}</p>
+              </div>
+            </ion-col>
+            <ion-col size="6">
+              <div class="summary-item">
+                <h3>Deudas</h3>
+                <p class="negative">{{ totalDebt | number : "1.2-2" }}</p>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
 
-        <ion-button
-          expand="block"
-          [routerLink]="['/dev-preview']"
-          color="primary"
-          style="margin: 20px 0"
-        >
-          <ion-icon name="phone-portrait" slot="start"></ion-icon>
-          Vista de Desarrollo (iOS/Android)
-        </ion-button>
-
+    <!-- Navigation Menu -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Módulos</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
         <ion-list>
-          <ion-item>
+          <ion-item button [routerLink]="['/incomes']">
+            <ion-icon
+              name="trending-up"
+              slot="start"
+              color="success"
+            ></ion-icon>
             <ion-label>
-              <h2>Plataforma</h2>
-              <p>{{ platform }}</p>
+              <h2>Ingresos</h2>
+              <p>Gestionar ingresos</p>
             </ion-label>
           </ion-item>
-          <ion-item>
+
+          <ion-item button [routerLink]="['/expenses']">
+            <ion-icon
+              name="trending-down"
+              slot="start"
+              color="danger"
+            ></ion-icon>
             <ion-label>
-              <h2>Es nativa</h2>
-              <p>{{ isNative ? "Sí" : "No" }}</p>
+              <h2>Egresos</h2>
+              <p>Gestionar egresos por categorías</p>
             </ion-label>
           </ion-item>
-        </ion-list>
 
-        <h3 style="margin-top: 20px; margin-bottom: 10px">Características:</h3>
-        <ion-list>
-          <ion-item>
-            <ion-icon
-              name="checkmark-circle"
-              slot="start"
-              color="success"
-            ></ion-icon>
-            <ion-label>Angular 17 (Standalone Components)</ion-label>
+          <ion-item button [routerLink]="['/categories']">
+            <ion-icon name="list" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h2>Categorías</h2>
+              <p>Gestionar categorías</p>
+            </ion-label>
           </ion-item>
-          <ion-item>
-            <ion-icon
-              name="checkmark-circle"
-              slot="start"
-              color="success"
-            ></ion-icon>
-            <ion-label>Capacitor 5 integrado</ion-label>
+
+          <ion-item button [routerLink]="['/accounts-receivable']">
+            <ion-icon name="people" slot="start" color="success"></ion-icon>
+            <ion-label>
+              <h2>Cuentas por Cobrar</h2>
+              <p>Gestionar cuentas por cobrar</p>
+            </ion-label>
           </ion-item>
-          <ion-item>
-            <ion-icon
-              name="checkmark-circle"
-              slot="start"
-              color="success"
-            ></ion-icon>
-            <ion-label>Ionic 7 integrado</ion-label>
+
+          <ion-item button [routerLink]="['/accounts-payable']">
+            <ion-icon name="card" slot="start" color="warning"></ion-icon>
+            <ion-label>
+              <h2>Cuentas por Pagar</h2>
+              <p>Gestionar cuentas por pagar</p>
+            </ion-label>
           </ion-item>
-          <ion-item>
-            <ion-icon
-              name="checkmark-circle"
-              slot="start"
-              color="success"
-            ></ion-icon>
-            <ion-label>Listo para Android/iOS</ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-icon
-              name="checkmark-circle"
-              slot="start"
-              color="success"
-            ></ion-icon>
-            <ion-label>Diseño responsive</ion-label>
+
+          <ion-item button [routerLink]="['/debts']">
+            <ion-icon name="cash" slot="start" color="danger"></ion-icon>
+            <ion-label>
+              <h2>Deudas</h2>
+              <p>Gestionar deudas</p>
+            </ion-label>
           </ion-item>
         </ion-list>
       </ion-card-content>
     </ion-card>
   </div>
 </ion-content>
-

@@ -1,0 +1,11 @@
+ion-item {
+  --padding-start: 16px;
+  --padding-end: 16px;
+}
+
+ion-item div[slot="end"] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
