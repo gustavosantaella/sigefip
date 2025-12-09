@@ -20,7 +20,8 @@ import {
   IonDatetime,
   IonButtons,
   IonBackButton,
-  IonBadge
+  IonBadge,
+  IonMenuButton
 } from '@ionic/angular/standalone';
 import { add, create, trash } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
@@ -51,7 +52,8 @@ import { Debt } from '../../models/debt.model';
     IonDatetime,
     IonButtons,
     IonBackButton,
-    IonBadge
+    IonBadge,
+    IonMenuButton
   ],
   templateUrl: './debts.component.html',
   styleUrl: './debts.component.css'

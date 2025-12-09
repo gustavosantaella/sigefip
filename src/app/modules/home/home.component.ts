@@ -18,6 +18,7 @@ import {
   IonGrid,
   IonRow,
   IonCol,
+  IonMenuButton,
 } from "@ionic/angular/standalone";
 import {
   wallet,
@@ -57,6 +58,7 @@ import { DebtService } from "../../services/offline/debt.service";
     IonGrid,
     IonRow,
     IonCol,
+    IonMenuButton,
   ],
   templateUrl: "./home.component.html",
   styleUrl: "./home.component.css",

@@ -20,7 +20,8 @@ import {
   IonSelectOption,
   IonButtons,
   IonBackButton,
-  IonBadge
+  IonBadge,
+  IonMenuButton
 } from '@ionic/angular/standalone';
 import { add, create, trash } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
@@ -51,7 +52,8 @@ import { Category } from '../../models/category.model';
     IonSelectOption,
     IonButtons,
     IonBackButton,
-    IonBadge
+    IonBadge,
+    IonMenuButton
   ],
   templateUrl: './categories.component.html',
   styleUrl: './categories.component.css'

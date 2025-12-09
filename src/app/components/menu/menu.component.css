@@ -1,0 +1,10 @@
+ion-item.selected {
+  --background: var(--ion-color-primary-tint);
+  --color: var(--ion-color-primary-contrast);
+}
+
+ion-item {
+  --padding-start: 20px;
+  --padding-end: 20px;
+}
+

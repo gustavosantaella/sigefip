@@ -21,7 +21,8 @@ import {
   IonDatetimeButton,
   IonDatetime,
   IonButtons,
-  IonBackButton
+  IonBackButton,
+  IonMenuButton
 } from '@ionic/angular/standalone';
 import { add, create, trash, calendar } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
@@ -55,7 +56,8 @@ import { Category } from '../../models/category.model';
     IonDatetimeButton,
     IonDatetime,
     IonButtons,
-    IonBackButton
+    IonBackButton,
+    IonMenuButton
   ],
   templateUrl: './incomes.component.html',
   styleUrl: './incomes.component.css'

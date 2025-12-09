@@ -20,7 +20,8 @@ import {
   IonDatetime,
   IonButtons,
   IonBackButton,
-  IonBadge
+  IonBadge,
+  IonMenuButton
 } from '@ionic/angular/standalone';
 import { add, create, trash } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
@@ -51,7 +52,8 @@ import { AccountReceivable } from '../../models/account-receivable.model';
     IonDatetime,
     IonButtons,
     IonBackButton,
-    IonBadge
+    IonBadge,
+    IonMenuButton
   ],
   templateUrl: './accounts-receivable.component.html',
   styleUrl: './accounts-receivable.component.css'

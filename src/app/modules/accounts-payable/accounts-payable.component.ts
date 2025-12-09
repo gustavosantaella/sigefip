@@ -20,7 +20,8 @@ import {
   IonDatetime,
   IonButtons,
   IonBackButton,
-  IonBadge
+  IonBadge,
+  IonMenuButton
 } from '@ionic/angular/standalone';
 import { add, create, trash } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
@@ -51,7 +52,8 @@ import { AccountPayable } from '../../models/account-payable.model';
     IonDatetime,
     IonButtons,
     IonBackButton,
-    IonBadge
+    IonBadge,
+    IonMenuButton
   ],
   templateUrl: './accounts-payable.component.html',
   styleUrl: './accounts-payable.component.css'
