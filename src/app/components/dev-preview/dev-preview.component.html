@@ -1,0 +1,100 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>Vista de Desarrollo</ion-title>
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="['/']" fill="clear">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="dev-preview-container">
+    <!-- Botón flotante de controles -->
+    <div class="floating-controls">
+      <ion-button
+        class="floating-button"
+        (click)="toggleControls()"
+        shape="round"
+        color="primary"
+      >
+        <ion-icon name="settings" slot="icon-only"></ion-icon>
+      </ion-button>
+
+      <!-- Panel de controles expandible -->
+      <div class="controls-panel" [class.expanded]="controlsExpanded">
+        <ion-segment [value]="deviceType" (ionChange)="setDeviceType($event)">
+          <ion-segment-button value="iphone">
+            <ion-label>iPhone</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="android">
+            <ion-label>Android</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="both">
+            <ion-icon name="phone-portrait-outline"></ion-icon>
+            <ion-label>Ambos</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+
+        <div class="controls-row">
+          <ion-segment [value]="orientation" (ionChange)="setOrientation($event)">
+            <ion-segment-button value="portrait">
+              <ion-icon name="phone-portrait"></ion-icon>
+              <ion-label>Vertical</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="landscape">
+              <ion-icon name="phone-landscape"></ion-icon>
+              <ion-label>Horizontal</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+
+          <ion-segment [value]="deviceSize" (ionChange)="setDeviceSize($event)">
+            <ion-segment-button value="phone">
+              <ion-icon name="phone-portrait"></ion-icon>
+              <ion-label>Teléfono</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="tablet">
+              <ion-icon name="tablet-portrait"></ion-icon>
+              <ion-label>Tablet</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+        </div>
+      </div>
+    </div>
+
+    <!-- Simulador de dispositivo -->
+    <div class="device-wrapper" [ngClass]="{ 'both-devices': showBoth }">
+      <!-- iPhone -->
+      <div
+        class="device-frame iphone"
+        [ngClass]="orientation + ' ' + deviceSize"
+        *ngIf="deviceType === 'iphone' || deviceType === 'both'"
+      >
+        <div class="device-screen">
+          <div class="device-content">
+            <router-outlet *ngIf="deviceType === 'iphone'"></router-outlet>
+            <!-- Cuando se muestran ambos, renderizamos el mismo componente -->
+            <app-home *ngIf="deviceType === 'both'"></app-home>
+          </div>
+        </div>
+      </div>
+
+      <!-- Android -->
+      <div
+        class="device-frame android"
+        [ngClass]="orientation + ' ' + deviceSize"
+        *ngIf="deviceType === 'android' || deviceType === 'both'"
+      >
+        <div class="device-screen">
+          <div class="device-content">
+            <router-outlet *ngIf="deviceType === 'android'"></router-outlet>
+            <!-- Cuando se muestran ambos, renderizamos el mismo componente -->
+            <app-home *ngIf="deviceType === 'both'"></app-home>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
