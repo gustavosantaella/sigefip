@@ -11,11 +11,4 @@ const currencies = [
   "DAI",
   "SOL",
   "ADA",
-  "XRP",
-  "LTC",
-  "BCH",
-  "USDT",
-  "DAI",
-  "SOL",
-  "ADA",
 ];

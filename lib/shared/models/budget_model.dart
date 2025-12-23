@@ -8,6 +8,8 @@ class Budget {
   final IconData icon;
   final Color color;
 
+  final String concurrency;
+
   const Budget({
     required this.id,
     required this.category,
@@ -15,6 +17,7 @@ class Budget {
     required this.spent,
     required this.icon,
     required this.color,
+    required this.concurrency,
   });
 
   double get progress => (spent / limit).clamp(0.0, 1.0);

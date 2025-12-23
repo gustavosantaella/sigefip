@@ -1,38 +1,90 @@
 import 'package:flutter/material.dart';
 import '../../../shared/models/budget_model.dart';
 import '../../../shared/widgets/custom_back_button.dart';
+import '../../../../core/constants/currencies.dart';
 
-class BudgetScreen extends StatelessWidget {
+class BudgetScreen extends StatefulWidget {
   const BudgetScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Mock Data
-    final List<Budget> budgets = [
-      AppColors_budget_mock.food,
-      AppColors_budget_mock.transport,
-      AppColors_budget_mock.utilities,
-      AppColors_budget_mock.entertainment,
-    ];
+  State<BudgetScreen> createState() => _BudgetScreenState();
+}
 
-    double totalLimit = budgets.fold(0, (sum, item) => sum + item.limit);
-    double totalSpent = budgets.fold(0, (sum, item) => sum + item.spent);
-    double totalProgress = (totalSpent / totalLimit).clamp(0.0, 1.0);
+class _BudgetScreenState extends State<BudgetScreen> {
+  String _selectedFilter = 'Todos';
+
+  final List<String> _filters = [
+    'Todos',
+    'Diario',
+    'Semanal',
+    'Mensual',
+    'Trimestral',
+    'Semestral',
+    'Anual',
+    'Eventualmente',
+  ];
+
+  // Mock Data
+  final List<Budget> _allBudgets = [
+    AppColors_budget_mock.food,
+    AppColors_budget_mock.transport,
+    AppColors_budget_mock.utilities,
+    AppColors_budget_mock.entertainment,
+  ];
+
+  List<Budget> get _filteredBudgets {
+    if (_selectedFilter == 'Todos') {
+      return _allBudgets;
+    }
+    return _allBudgets
+        .where((budget) => budget.concurrency == _selectedFilter)
+        .toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double totalLimit = _filteredBudgets.fold(
+      0,
+      (sum, item) => sum + item.limit,
+    );
+    double totalSpent = _filteredBudgets.fold(
+      0,
+      (sum, item) => sum + item.spent,
+    );
+    // Avoid division by zero
+    double totalProgress = totalLimit > 0
+        ? (totalSpent / totalLimit).clamp(0.0, 1.0)
+        : 0.0;
 
     return Scaffold(
       backgroundColor: Colors.black,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: const Color(0xFF1E1E1E),
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+            ),
+            builder: (context) => const AddBudgetForm(),
+          );
+        },
+        backgroundColor: const Color(0xFF6C63FF),
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
       body: SafeArea(
         child: Column(
           children: [
             // Header
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
               child: Row(
                 children: [
                   const CustomBackButton(),
                   const SizedBox(width: 16),
                   const Text(
-                    'Presupuesto Mensual',
+                    'Presupuesto',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24,
@@ -42,6 +94,49 @@ class BudgetScreen extends StatelessWidget {
                 ],
               ),
             ),
+
+            // Filter Chips
+            SizedBox(
+              height: 50,
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                scrollDirection: Axis.horizontal,
+                itemCount: _filters.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (context, index) {
+                  final filter = _filters[index];
+                  final isSelected = _selectedFilter == filter;
+                  return ChoiceChip(
+                    label: Text(filter),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      if (selected) {
+                        setState(() => _selectedFilter = filter);
+                      }
+                    },
+                    backgroundColor: const Color(0xFF1E1E1E),
+                    selectedColor: const Color(0xFF6C63FF),
+                    labelStyle: TextStyle(
+                      color: isSelected ? Colors.white : Colors.grey,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(
+                        color: isSelected
+                            ? const Color(0xFF6C63FF)
+                            : Colors.white10,
+                      ),
+                    ),
+                    showCheckmark: false,
+                  );
+                },
+              ),
+            ),
+
+            const SizedBox(height: 10),
 
             // Summary Card
             Container(
@@ -101,80 +196,285 @@ class BudgetScreen extends StatelessWidget {
 
             // Budget List
             Expanded(
-              child: ListView.separated(
-                padding: const EdgeInsets.all(20),
-                itemCount: budgets.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 16),
-                itemBuilder: (context, index) {
-                  final budget = budgets[index];
-                  return Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1E1E1E),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.white10),
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: budget.color.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(10),
+              child: _filteredBudgets.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No hay presupuestos para este filtro',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                    )
+                  : ListView.separated(
+                      padding: const EdgeInsets.all(20),
+                      itemCount: _filteredBudgets.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 16),
+                      itemBuilder: (context, index) {
+                        final budget = _filteredBudgets[index];
+                        return Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1E1E1E),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Colors.white10),
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: budget.color.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Icon(
+                                      budget.icon,
+                                      color: budget.color,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          budget.category,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        Text(
+                                          budget.concurrency,
+                                          style: TextStyle(
+                                            color: Colors.grey[500],
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Text(
+                                    '\$${budget.spent.toStringAsFixed(0)} / \$${budget.limit.toStringAsFixed(0)}',
+                                    style: TextStyle(
+                                      color: budget.spent > budget.limit
+                                          ? Colors.redAccent
+                                          : Colors.grey[400],
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              child: Icon(
-                                budget.icon,
-                                color: budget.color,
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                budget.category,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
+                              const SizedBox(height: 12),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(4),
+                                child: LinearProgressIndicator(
+                                  value: budget.progress,
+                                  backgroundColor: Colors.grey[800],
+                                  valueColor: AlwaysStoppedAnimation(
+                                    budget.spent > budget.limit
+                                        ? Colors.redAccent
+                                        : budget.color,
+                                  ),
+                                  minHeight: 6,
                                 ),
                               ),
-                            ),
-                            Text(
-                              '\$${budget.spent.toStringAsFixed(0)} / \$${budget.limit.toStringAsFixed(0)}',
-                              style: TextStyle(
-                                color: budget.spent > budget.limit
-                                    ? Colors.redAccent
-                                    : Colors.grey[400],
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: LinearProgressIndicator(
-                            value: budget.progress,
-                            backgroundColor: Colors.grey[800],
-                            valueColor: AlwaysStoppedAnimation(
-                              budget.spent > budget.limit
-                                  ? Colors.redAccent
-                                  : budget.color,
-                            ),
-                            minHeight: 6,
+                            ],
                           ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class AddBudgetForm extends StatefulWidget {
+  const AddBudgetForm({super.key});
+
+  @override
+  State<AddBudgetForm> createState() => _AddBudgetFormState();
+}
+
+class _AddBudgetFormState extends State<AddBudgetForm> {
+  String? _selectedCategory;
+  String? _selectedCurrency;
+  String? _selectedConcurrency;
+  final TextEditingController _limitController = TextEditingController();
+
+  final List<String> _concurrencies = [
+    'Diario',
+    'Semanal',
+    'Mensual',
+    'Trimestral',
+    'Semestral',
+    'Anual',
+    'Eventualmente',
+  ];
+
+  // Mock Categories for Dropdown
+  final List<String> _categories = [
+    'Alimentación',
+    'Transporte',
+    'Servicios',
+    'Entretenimiento',
+    'Salud',
+    'Educación',
+    'Ahorros',
+    'Otros',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+        left: 20,
+        right: 20,
+        top: 20,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Nuevo Presupuesto',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close, color: Colors.grey),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+
+          // Category Dropdown
+          _buildDropdown(
+            label: 'Categoría',
+            value: _selectedCategory,
+            items: _categories,
+            onChanged: (val) => setState(() => _selectedCategory = val),
+          ),
+          const SizedBox(height: 16),
+
+          // Currency Dropdown
+          _buildDropdown(
+            label: 'Moneda',
+            value: _selectedCurrency,
+            items: currencies, // From core constants
+            onChanged: (val) => setState(() => _selectedCurrency = val),
+          ),
+          const SizedBox(height: 16),
+
+          // Limit Input
+          TextField(
+            controller: _limitController,
+            keyboardType: TextInputType.number,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              labelText: 'Monto Límite',
+              labelStyle: TextStyle(color: Colors.grey[400]),
+              filled: true,
+              fillColor: Colors.white.withOpacity(0.05),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Concurrency Dropdown
+          _buildDropdown(
+            label: 'Concurrencia',
+            value: _selectedConcurrency,
+            items: _concurrencies,
+            onChanged: (val) => setState(() => _selectedConcurrency = val),
+          ),
+
+          const SizedBox(height: 30),
+
+          // Save Button
+          ElevatedButton(
+            onPressed: () {
+              // Logic to save budget would go here
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF6C63FF),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text(
+              'Guardar Presupuesto',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          const SizedBox(height: 30),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDropdown({
+    required String label,
+    required String? value,
+    required List<String> items,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: value,
+              isExpanded: true,
+              dropdownColor: const Color(0xFF2C2C2C),
+              icon: const Icon(Icons.arrow_drop_down, color: Colors.white70),
+              style: const TextStyle(color: Colors.white),
+              hint: const Text(
+                'Seleccionar',
+                style: TextStyle(color: Colors.grey),
+              ),
+              items: items.map((String item) {
+                return DropdownMenuItem<String>(value: item, child: Text(item));
+              }).toList(),
+              onChanged: onChanged,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -188,6 +488,7 @@ class AppColors_budget_mock {
     spent: 3200.00,
     icon: Icons.restaurant,
     color: Color(0xFFFF5252),
+    concurrency: 'Mensual',
   );
 
   static const Budget transport = Budget(
@@ -197,6 +498,7 @@ class AppColors_budget_mock {
     spent: 1800.00,
     icon: Icons.directions_bus,
     color: Color(0xFF448AFF),
+    concurrency: 'Semanal',
   );
 
   static const Budget utilities = Budget(
@@ -206,6 +508,7 @@ class AppColors_budget_mock {
     spent: 1500.00,
     icon: Icons.bolt,
     color: Color(0xFFFFAB40),
+    concurrency: 'Mensual',
   );
 
   static const Budget entertainment = Budget(
@@ -215,5 +518,6 @@ class AppColors_budget_mock {
     spent: 2000.00, // Over budget example
     icon: Icons.movie,
     color: Color(0xFFE040FB),
+    concurrency: 'Eventualmente',
   );
 }
