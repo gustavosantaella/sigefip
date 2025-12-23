@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'accounts_section.dart';
-import '../../../shared/widgets/transactions.dart';
+import '../../../../shared/widgets/transactions.dart';
 import 'quick_actions.dart';
 
 class HomeDashboard extends StatelessWidget {
@@ -41,73 +41,24 @@ class HomeDashboard extends StatelessWidget {
           ),
           const SizedBox(height: 30),
 
-          // Balance Section
-          const Text(
-            'Balance Total',
-            style: TextStyle(color: Colors.grey, fontSize: 14),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            '21.290,50 US\$',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                Icon(Icons.call_made, color: Color(0xFF4CAF50), size: 16),
-                SizedBox(width: 4),
-                Text(
-                  '+12.5% este mes',
-                  style: TextStyle(
-                    color: Color(0xFF4CAF50),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 30),
-
-          // Income/Expense Cards
-          Row(
-            children: [
-              Expanded(
-                child: _SummaryCard(
-                  title: 'Ingresos',
-                  amount: '0,00 US\$',
-                  icon: Icons.arrow_downward,
-                  iconColor: const Color(0xFF4CAF50),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _SummaryCard(
-                  title: 'Egresos',
-                  amount: '0,00 US\$',
-                  icon: Icons.arrow_upward,
-                  iconColor: const Color(0xFFF44336),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 30),
-
-          // Quick Actions
-          const QuickActionsSection(),
-          const SizedBox(height: 30),
-
           // Accounts Section
           const AccountsSection(),
           const SizedBox(height: 30),
+          // Quick Actions
+          const QuickActionsSection(),
+
+          const SizedBox(height: 30),
 
           // Recent Transactions
+          const Text(
+            'Transacciones Recientes',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
           TransactionCard(
             title: 'Cine y cena',
             category: 'Entretenimiento',
@@ -117,6 +68,42 @@ class HomeDashboard extends StatelessWidget {
             color: Colors.purple,
             icon: Icons.games_outlined,
             isExpense: true,
+          ),
+          const SizedBox(height: 30),
+
+          TransactionCard(
+            title: 'Cine y cena',
+            category: 'Entretenimiento',
+            account: 'Cuenta Principal',
+            date: '17 dic 2024',
+            amount: '-60,00 US\$',
+            color: Colors.purple,
+            icon: Icons.games_outlined,
+            isExpense: true,
+          ),
+          const SizedBox(height: 30),
+
+          TransactionCard(
+            title: 'Cine y cena',
+            category: 'Entretenimiento',
+            account: 'Cuenta Principal',
+            date: '17 dic 2024',
+            amount: '-60,00 US\$',
+            color: Colors.purple,
+            icon: Icons.games_outlined,
+            isExpense: true,
+          ),
+          const SizedBox(height: 30),
+
+          TransactionCard(
+            title: 'Cine y cena',
+            category: 'Entretenimiento',
+            account: 'Cuenta Principal',
+            date: '17 dic 2024',
+            amount: '+60,00 US\$',
+            color: Colors.purple,
+            icon: Icons.add,
+            isExpense: false,
           ),
           const SizedBox(height: 20),
         ],

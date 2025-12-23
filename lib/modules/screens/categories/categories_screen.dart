@@ -184,21 +184,79 @@ class _AddCategoryFormState extends State<AddCategoryForm> {
   ];
 
   final List<IconData> _availableIcons = [
-    Icons.restaurant,
-    Icons.directions_bus,
+    // Finance & Shopping
+    Icons.account_balance,
+    Icons.account_balance_wallet,
+    Icons.payments,
+    Icons.shopping_cart,
     Icons.shopping_bag,
-    Icons.bolt,
-    Icons.movie,
-    Icons.medical_services,
-    Icons.school,
-    Icons.card_giftcard,
+    Icons.receipt,
+    Icons.credit_card,
     Icons.savings,
-    Icons.home,
+    Icons.monetization_on,
+    Icons.attach_money,
+    Icons.request_quote,
+    Icons.loyalty,
+    Icons.local_offer,
+    Icons.store,
+
+    // Food & Drink
+    Icons.restaurant,
+    Icons.local_pizza,
+    Icons.lunch_dining,
+    Icons.bakery_dining,
+    Icons.coffee,
+    Icons.local_bar,
+    Icons.celebration,
+    Icons.cake,
+    Icons.icecream,
+
+    // Transport & Travel
+    Icons.directions_bus,
     Icons.directions_car,
+    Icons.directions_bike,
+    Icons.train,
     Icons.flight,
-    Icons.fitness_center,
+    Icons.hotel,
+    Icons.commute,
+    Icons.local_gas_station,
+    Icons.ev_station,
+    Icons.map, Icons.explore,
+
+    // Home & Life
+    Icons.home, Icons.bolt, Icons.water_drop, Icons.lightbulb, Icons.wifi,
     Icons.pets,
-    Icons.work,
+    Icons.family_restroom,
+    Icons.child_care,
+    Icons.cleaning_services,
+    Icons.local_laundry_service, Icons.checkroom, Icons.kitchen,
+
+    // Health & Wellness
+    Icons.medical_services,
+    Icons.local_hospital,
+    Icons.fitness_center,
+    Icons.spa,
+    Icons.psychology, Icons.healing, Icons.self_improvement,
+
+    // Entertainment & Tech
+    Icons.movie, Icons.music_note, Icons.games, Icons.videogame_asset,
+    Icons.tv,
+    Icons.headphones,
+    Icons.camera_alt,
+    Icons.smartphone,
+    Icons.laptop,
+
+    // Education & Work
+    Icons.school, Icons.book, Icons.work, Icons.business_center, Icons.computer,
+    Icons.edit, Icons.print, Icons.mail, Icons.inventory,
+
+    // Others
+    Icons.category,
+    Icons.star,
+    Icons.heart_broken,
+    Icons.favorite,
+    Icons.redeem,
+    Icons.handshake, Icons.groups, Icons.person, Icons.shield, Icons.policy,
   ];
 
   @override
@@ -246,19 +304,20 @@ class _AddCategoryFormState extends State<AddCategoryForm> {
           ),
           const SizedBox(height: 12),
           SizedBox(
-            height: 50,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
+            height: 200, // Increased height for grid
+            child: GridView.builder(
               itemCount: _availableIcons.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 5,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
               itemBuilder: (context, index) {
                 final icon = _availableIcons[index];
                 final isSelected = _selectedIcon == icon;
                 return GestureDetector(
                   onTap: () => setState(() => _selectedIcon = icon),
                   child: Container(
-                    width: 50,
-                    height: 50,
                     decoration: BoxDecoration(
                       color: isSelected
                           ? _selectedColor.withOpacity(0.2)
@@ -270,7 +329,8 @@ class _AddCategoryFormState extends State<AddCategoryForm> {
                     ),
                     child: Icon(
                       icon,
-                      color: isSelected ? _selectedColor : Colors.grey,
+                      color: isSelected ? _selectedColor : Colors.grey[400],
+                      size: 24,
                     ),
                   ),
                 );
