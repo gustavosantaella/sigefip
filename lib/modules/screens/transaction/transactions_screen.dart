@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../shared/widgets/transactions.dart';
+import '../../../shared/widgets/transactions.dart';
+import '../../../shared/widgets/custom_bottom_sheet.dart';
+import '../../../shared/widgets/custom_dropdown.dart';
+import '../../../shared/widgets/custom_button.dart';
+import '../../../shared/widgets/custom_text_field.dart';
 
 class TransactionsScreen extends StatelessWidget {
   const TransactionsScreen({super.key});
@@ -213,38 +217,14 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 20,
-        right: 20,
-        top: 20,
-      ),
+    return CustomBottomSheet(
+      title: 'Nueva Transacción',
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Nueva Transacción',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close, color: Colors.grey),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-
           // Title Input
-          _buildTextField(controller: _titleController, label: 'Título'),
+          CustomTextField(controller: _titleController, label: 'Título'),
           const SizedBox(height: 16),
 
           // Type Selection (Income/Expense)
@@ -272,25 +252,27 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
           const SizedBox(height: 16),
 
           // Account Dropdown
-          _buildDropdown(
+          CustomDropdown<String>(
             label: 'Cuenta',
             value: _selectedAccount,
             items: _accounts,
+            itemLabelBuilder: (item) => item,
             onChanged: (val) => setState(() => _selectedAccount = val),
           ),
           const SizedBox(height: 16),
 
           // Category Dropdown
-          _buildDropdown(
+          CustomDropdown<String>(
             label: 'Categoría',
             value: _selectedCategory,
             items: _categories,
+            itemLabelBuilder: (item) => item,
             onChanged: (val) => setState(() => _selectedCategory = val),
           ),
           const SizedBox(height: 16),
 
           // Amount Input
-          _buildTextField(
+          CustomTextField(
             controller: _amountController,
             label: 'Monto',
             keyboardType: TextInputType.number,
@@ -299,7 +281,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
           const SizedBox(height: 16),
 
           // Note Input
-          _buildTextField(
+          CustomTextField(
             controller: _noteController,
             label: 'Nota (Opcional)',
             maxLines: 2,
@@ -332,111 +314,25 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
 
           if (_showExtras) ...[
             const SizedBox(height: 16),
-            _buildTextField(
+            CustomTextField(
               controller: _conversionRateController,
               label: 'Tasa de Conversión',
               keyboardType: TextInputType.number,
-              prefixText: '',
             ),
           ],
 
           const SizedBox(height: 30),
 
           // Save Button
-          ElevatedButton(
+          CustomButton(
+            text: 'Guardar Transacción',
             onPressed: () {
               // Logic to save transaction
               Navigator.pop(context);
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF6C63FF),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text(
-              'Guardar Transacción',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
           ),
-          const SizedBox(height: 30),
         ],
       ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    TextInputType? keyboardType,
-    int maxLines = 1,
-    String? prefixText,
-  }) {
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      maxLines: maxLines,
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(color: Colors.grey[400]),
-        prefixText: prefixText,
-        prefixStyle: const TextStyle(color: Colors.white),
-        filled: true,
-        fillColor: Colors.white.withOpacity(0.05),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDropdown({
-    required String label,
-    required String? value,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: TextStyle(color: Colors.grey[400], fontSize: 12)),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: value,
-              isExpanded: true,
-              dropdownColor: const Color(0xFF2C2C2C),
-              icon: const Icon(Icons.arrow_drop_down, color: Colors.white70),
-              style: const TextStyle(color: Colors.white),
-              hint: const Text(
-                'Seleccionar',
-                style: TextStyle(color: Colors.grey),
-              ),
-              items: items.map((String item) {
-                return DropdownMenuItem<String>(value: item, child: Text(item));
-              }).toList(),
-              onChanged: onChanged,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import '../../../shared/models/budget_model.dart';
 import '../../../shared/widgets/custom_back_button.dart';
 import '../../../../core/constants/currencies.dart';
+import '../../../shared/widgets/custom_bottom_sheet.dart';
+import '../../../shared/widgets/custom_dropdown.dart';
+import '../../../shared/widgets/custom_button.dart';
+import '../../../shared/widgets/custom_text_field.dart';
 
 class BudgetScreen extends StatefulWidget {
   const BudgetScreen({super.key});
@@ -331,150 +335,62 @@ class _AddBudgetFormState extends State<AddBudgetForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 20,
-        right: 20,
-        top: 20,
-      ),
+    return CustomBottomSheet(
+      title: 'Nuevo Presupuesto',
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Nuevo Presupuesto',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close, color: Colors.grey),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-
           // Category Dropdown
-          _buildDropdown(
+          CustomDropdown<String>(
             label: 'Categoría',
             value: _selectedCategory,
             items: _categories,
+            itemLabelBuilder: (item) => item,
             onChanged: (val) => setState(() => _selectedCategory = val),
           ),
           const SizedBox(height: 16),
 
           // Currency Dropdown
-          _buildDropdown(
+          CustomDropdown<String>(
             label: 'Moneda',
             value: _selectedCurrency,
             items: currencies, // From core constants
+            itemLabelBuilder: (item) => item,
             onChanged: (val) => setState(() => _selectedCurrency = val),
           ),
           const SizedBox(height: 16),
 
           // Limit Input
-          TextField(
+          CustomTextField(
             controller: _limitController,
+            label: 'Monto Límite',
             keyboardType: TextInputType.number,
-            style: const TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              labelText: 'Monto Límite',
-              labelStyle: TextStyle(color: Colors.grey[400]),
-              filled: true,
-              fillColor: Colors.white.withOpacity(0.05),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
-            ),
           ),
           const SizedBox(height: 16),
 
           // Concurrency Dropdown
-          _buildDropdown(
+          CustomDropdown<String>(
             label: 'Concurrencia',
             value: _selectedConcurrency,
             items: _concurrencies,
+            itemLabelBuilder: (item) => item,
             onChanged: (val) => setState(() => _selectedConcurrency = val),
           ),
 
           const SizedBox(height: 30),
 
           // Save Button
-          ElevatedButton(
+          CustomButton(
+            text: 'Guardar Presupuesto',
             onPressed: () {
               // Logic to save budget would go here
               Navigator.pop(context);
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF6C63FF),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text(
-              'Guardar Presupuesto',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
           ),
           const SizedBox(height: 30),
         ],
       ),
-    );
-  }
-
-  Widget _buildDropdown({
-    required String label,
-    required String? value,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: TextStyle(color: Colors.grey[400], fontSize: 12)),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: value,
-              isExpanded: true,
-              dropdownColor: const Color(0xFF2C2C2C),
-              icon: const Icon(Icons.arrow_drop_down, color: Colors.white70),
-              style: const TextStyle(color: Colors.white),
-              hint: const Text(
-                'Seleccionar',
-                style: TextStyle(color: Colors.grey),
-              ),
-              items: items.map((String item) {
-                return DropdownMenuItem<String>(value: item, child: Text(item));
-              }).toList(),
-              onChanged: onChanged,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
