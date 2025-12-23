@@ -6,6 +6,7 @@ import '../../../shared/widgets/custom_bottom_sheet.dart';
 import '../../../shared/widgets/custom_dropdown.dart';
 import '../../../shared/widgets/custom_button.dart';
 import '../../../shared/widgets/custom_text_field.dart';
+import '../../../shared/widgets/type_chip.dart';
 
 class BudgetScreen extends StatefulWidget {
   const BudgetScreen({super.key});
@@ -309,6 +310,7 @@ class _AddBudgetFormState extends State<AddBudgetForm> {
   String? _selectedCategory;
   String? _selectedCurrency;
   String? _selectedConcurrency;
+  String _budgetType = 'Egreso'; // 'Ingreso' or 'Egreso'
   final TextEditingController _limitController = TextEditingController();
 
   final List<String> _concurrencies = [
@@ -341,6 +343,30 @@ class _AddBudgetFormState extends State<AddBudgetForm> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Budget Type Selection
+          Row(
+            children: [
+              Expanded(
+                child: TypeChip(
+                  label: 'Ingreso',
+                  isSelected: _budgetType == 'Ingreso',
+                  color: Colors.green,
+                  onTap: () => setState(() => _budgetType = 'Ingreso'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TypeChip(
+                  label: 'Egreso',
+                  isSelected: _budgetType == 'Egreso',
+                  color: Colors.redAccent,
+                  onTap: () => setState(() => _budgetType = 'Egreso'),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
           // Category Dropdown
           CustomDropdown<String>(
             label: 'Categoría',

@@ -4,6 +4,7 @@ import '../../../shared/widgets/custom_bottom_sheet.dart';
 import '../../../shared/widgets/custom_dropdown.dart';
 import '../../../shared/widgets/custom_button.dart';
 import '../../../shared/widgets/custom_text_field.dart';
+import '../../../shared/widgets/type_chip.dart';
 
 class TransactionsScreen extends StatelessWidget {
   const TransactionsScreen({super.key});
@@ -231,7 +232,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
           Row(
             children: [
               Expanded(
-                child: _TypeChip(
+                child: TypeChip(
                   label: 'Ingreso',
                   isSelected: _transactionType == 'Ingreso',
                   color: Colors.green,
@@ -240,7 +241,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _TypeChip(
+                child: TypeChip(
                   label: 'Egreso',
                   isSelected: _transactionType == 'Egreso',
                   color: Colors.redAccent,
@@ -332,48 +333,6 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
             },
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _TypeChip extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _TypeChip({
-    required this.label,
-    required this.isSelected,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? color.withOpacity(0.2)
-              : Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? color : Colors.transparent,
-            width: 2,
-          ),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? color : Colors.grey,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
       ),
     );
   }
