@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sigefip/shared/services/offline/account_service.dart';
 import '../../../shared/models/account_model.dart';
 import '../../../shared/widgets/custom_bottom_sheet.dart';
 import '../../../shared/widgets/custom_button.dart';
@@ -6,20 +7,34 @@ import '../../../shared/widgets/custom_dropdown.dart';
 import '../../../shared/widgets/custom_text_field.dart';
 import '../../../../core/constants/currencies.dart';
 
-class AccountsScreen extends StatelessWidget {
+class AccountsScreen extends StatefulWidget {
   const AccountsScreen({super.key});
 
   @override
+  State<AccountsScreen> createState() => _AccountsScreenState();
+}
+
+class _AccountsScreenState extends State<AccountsScreen> {
+  List<Account> accounts = [];
+  final AccountService accountService = AccountService();
+
+  @override
+  void initState() {
+    super.initState();
+    loadAccounts();
+  }
+
+  void loadAccounts() async {
+    print("Loading accounts");
+    final List<Account> accounts = await accountService.getAccounts();
+    print(accounts);
+    setState(() {
+      this.accounts = accounts;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Mock Data
-    final List<Account> accounts = [
-      AppColors_accounts_mock.cash,
-      AppColors_accounts_mock.bank,
-      AppColors_accounts_mock.savings,
-    ];
-
-    double totalBalance = accounts.fold(0, (sum, item) => sum + item.balance);
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -43,10 +58,6 @@ class AccountsScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        'Balance Total: \$${totalBalance.toStringAsFixed(2)}',
-                        style: TextStyle(color: Colors.grey[400], fontSize: 14),
-                      ),
                     ],
                   ),
                   IconButton(
@@ -130,7 +141,7 @@ class AccountsScreen extends StatelessWidget {
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
             ),
-            builder: (context) => const AddAccountForm(),
+            builder: (context) => AddAccountForm(loadAccounts),
           );
         },
         backgroundColor: const Color(0xFF6C63FF),
@@ -141,7 +152,9 @@ class AccountsScreen extends StatelessWidget {
 }
 
 class AddAccountForm extends StatefulWidget {
-  const AddAccountForm({super.key});
+  const AddAccountForm(this.loadAccounts, {super.key});
+
+  final Function loadAccounts;
 
   @override
   State<AddAccountForm> createState() => _AddAccountFormState();
@@ -152,6 +165,8 @@ class _AddAccountFormState extends State<AddAccountForm> {
   final _balanceController = TextEditingController();
   String? _selectedCurrency;
   Color _selectedColor = const Color(0xFF6C63FF);
+
+  final AccountService _accountService = AccountService();
 
   final List<Color> _availableColors = [
     const Color(0xFF6C63FF),
@@ -229,9 +244,21 @@ class _AddAccountFormState extends State<AddAccountForm> {
           const SizedBox(height: 30),
           CustomButton(
             text: 'Guardar Cuenta',
-            onPressed: () {
-              // Logic to save
-              Navigator.pop(context);
+            onPressed: () async {
+              final account = Account(
+                name: _nameController.text,
+                balance: double.parse(_balanceController.text),
+                currency: _selectedCurrency!,
+                icon: Icons.money,
+                color: _selectedColor,
+              );
+
+              await _accountService.storeAccount(account);
+              widget.loadAccounts();
+
+              if (mounted) {
+                Navigator.pop(context);
+              }
             },
           ),
           const SizedBox(height: 16),
@@ -239,30 +266,4 @@ class _AddAccountFormState extends State<AddAccountForm> {
       ),
     );
   }
-}
-
-class AppColors_accounts_mock {
-  static const Account cash = Account(
-    id: '1',
-    name: 'Efectivo',
-    balance: 15430.00,
-    icon: Icons.money,
-    color: Color(0xFF4CAF50),
-  );
-
-  static const Account bank = Account(
-    id: '2',
-    name: 'Banco Principal',
-    balance: 45000.00,
-    icon: Icons.account_balance,
-    color: Color(0xFF2196F3),
-  );
-
-  static const Account savings = Account(
-    id: '3',
-    name: 'Ahorros',
-    balance: 12000.00,
-    icon: Icons.savings,
-    color: Color(0xFFFF9800),
-  );
 }
