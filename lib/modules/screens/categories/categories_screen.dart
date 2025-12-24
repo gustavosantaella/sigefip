@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sigefip/shared/models/category_model.dart';
 import 'package:sigefip/shared/services/offline/category_service.dart';
+import '../../../../shared/services/data_sync_notifier.dart';
 import '../../../../shared/widgets/custom_back_button.dart';
 import '../../../../shared/widgets/custom_bottom_sheet.dart';
 import '../../../../shared/widgets/custom_button.dart';
@@ -21,6 +22,13 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   void initState() {
     super.initState();
     _loadCategories();
+    dataSyncNotifier.addListener(_loadCategories);
+  }
+
+  @override
+  void dispose() {
+    dataSyncNotifier.removeListener(_loadCategories);
+    super.dispose();
   }
 
   Future<void> _loadCategories() async {
@@ -69,37 +77,42 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 itemCount: categories.length,
                 itemBuilder: (context, index) {
                   final category = categories[index];
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1E1E1E),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white10),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: category.color.withOpacity(0.1),
-                            shape: BoxShape.circle,
+                  return GestureDetector(
+                    onLongPress: category.isDefault
+                        ? null
+                        : () => _confirmDelete(context, category),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1E1E1E),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.white10),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: category.color.withOpacity(0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              category.icon,
+                              color: category.color,
+                              size: 32,
+                            ),
                           ),
-                          child: Icon(
-                            category.icon,
-                            color: category.color,
-                            size: 32,
+                          const SizedBox(height: 12),
+                          Text(
+                            category.name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          category.name,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -124,6 +137,63 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         backgroundColor: const Color(0xFF6C63FF),
         child: const Icon(Icons.add, color: Colors.white),
       ),
+    );
+  }
+
+  void _confirmDelete(BuildContext context, Category category) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1E1E1E),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
+      builder: (context) {
+        return CustomBottomSheet(
+          title: '¿Eliminar categoría?',
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '¿Está seguro de querer eliminar la categoría "${category.name}"?',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.grey, fontSize: 16),
+              ),
+              const SizedBox(height: 30),
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomButton(
+                      text: 'No',
+                      backgroundColor: Colors.white10,
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: CustomButton(
+                      text: 'Sí',
+                      backgroundColor: Colors.redAccent,
+                      onPressed: () async {
+                        await CategoryService.delete(category.id);
+                        _loadCategories();
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Categoría eliminada'),
+                              backgroundColor: Colors.redAccent,
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

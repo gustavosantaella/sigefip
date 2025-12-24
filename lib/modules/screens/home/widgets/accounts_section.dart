@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../../shared/models/account_model.dart';
 import '../../../../shared/services/offline/account_service.dart';
+import '../../../../shared/services/data_sync_notifier.dart';
+import '../../accounts/accounts_screen.dart';
 
 class AccountsSection extends StatefulWidget {
   const AccountsSection({super.key});
@@ -17,6 +19,13 @@ class _AccountsSectionState extends State<AccountsSection> {
   void initState() {
     super.initState();
     _loadAccounts();
+    dataSyncNotifier.addListener(_loadAccounts);
+  }
+
+  @override
+  void dispose() {
+    dataSyncNotifier.removeListener(_loadAccounts);
+    super.dispose();
   }
 
   Future<void> _loadAccounts() async {
@@ -47,25 +56,83 @@ class _AccountsSectionState extends State<AccountsSection> {
           ),
         ),
         const SizedBox(height: 16),
-        SizedBox(
-          height: 160,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: _accounts.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 16),
-            itemBuilder: (context, index) {
-              final account = _accounts[index];
-              return _AccountCard(
-                color: account.color,
-                title: account.name,
-                balance:
-                    '${account.balance.toStringAsFixed(2)} ${account.currency ?? 'USD'}',
-                currency: account.currency ?? 'USD',
-                isSelected: index == 0,
+        if (_accounts.isEmpty)
+          GestureDetector(
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: const Color(0xFF1E1E1E),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(25.0),
+                  ),
+                ),
+                builder: (context) => AddAccountForm(_loadAccounts),
               );
             },
+            child: Container(
+              height: 160,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E1E1E),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: Colors.white10,
+                  style: BorderStyle.solid,
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add_card, color: Colors.grey[600], size: 40),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'No tienes cuentas registradas',
+                    style: TextStyle(color: Colors.grey, fontSize: 14),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6C63FF),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Crear una cuenta',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        else
+          SizedBox(
+            height: 160,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _accounts.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 16),
+              itemBuilder: (context, index) {
+                final account = _accounts[index];
+                return _AccountCard(
+                  color: account.color,
+                  title: account.name,
+                  balance:
+                      '${account.balance.toStringAsFixed(2)} ${account.currency ?? 'USD'}',
+                  currency: account.currency ?? 'USD',
+                  isSelected: index == 0,
+                );
+              },
+            ),
           ),
-        ),
       ],
     );
   }

@@ -2,6 +2,7 @@ import 'package:sigefip/shared/models/category_model.dart';
 import 'package:sigefip/shared/services/storage_service.dart';
 import 'package:sigefip/core/constants/categories.dart';
 import 'package:flutter/material.dart';
+import 'package:sigefip/shared/services/data_sync_notifier.dart';
 
 class CategoryService {
   static final StorageService storageService = StorageService.instance;
@@ -9,56 +10,60 @@ class CategoryService {
 
   static Future<void> store(Category category) async {
     await storageService.pushToArray(_key, category.toMap());
+    dataSyncNotifier.notifyCategoryChange();
   }
 
   static Future<List<Category>> getCategories() async {
-    List<Category> categories = await storageService.getTypedArray<Category>(
-      _key,
-      (json) => Category.fromMap(json),
-    );
+    final List<Category> allCategories = [];
 
-    if (categories.isEmpty) {
-      await _seedCategories();
-      categories = await getCategories();
-    }
-
-    return categories;
-  }
-
-  static Future<void> _seedCategories() async {
-    final List<Category> initialCategories = [];
-
+    // 1. Add Default Categories from constants
     for (var cat in expensesCategories) {
-      initialCategories.add(
+      allCategories.add(
         Category(
           id: cat['uuid'] as String,
           name: cat['name'] as String,
           icon: cat['icon'] as IconData,
           color: cat['color'] as Color,
           type: 'Egreso',
+          isDefault: true,
         ),
       );
     }
 
     for (var cat in incomeCategories) {
-      initialCategories.add(
+      allCategories.add(
         Category(
           id: cat['uuid'] as String,
           name: cat['name'] as String,
           icon: cat['icon'] as IconData,
           color: cat['color'] as Color,
           type: 'Ingreso',
+          isDefault: true,
         ),
       );
     }
 
-    for (var category in initialCategories) {
-      await store(category);
-    }
+    // 2. Add Saved Categories from storage
+    final List<Category> savedCategories = await storageService
+        .getTypedArray<Category>(_key, (json) => Category.fromMap(json));
+
+    allCategories.addAll(savedCategories);
+
+    return allCategories;
   }
 
   static Future<Category> getByName(String name) async {
     List<Category> categories = await getCategories();
     return categories.where((category) => category.name == name).first;
+  }
+
+  static Future<void> delete(String id) async {
+    // Prevent deletion if it's a default category (ID starts with 'df')
+    if (id.startsWith('df')) {
+      debugPrint('Cannot delete default category: $id');
+      return;
+    }
+    await storageService.removeFromArray(_key, id);
+    dataSyncNotifier.notifyCategoryChange();
   }
 }

@@ -4,7 +4,7 @@ import 'package:sigefip/shared/models/base_model.dart';
 class Account {
   String? id;
   String name;
-  final double balance;
+  double balance;
   final String? currency;
   final IconData icon;
   final Color color;

@@ -18,10 +18,10 @@ class AppRoute {
 
 class MainRouter {
   static final List<AppRoute> routes = [
-    const AppRoute(
+    AppRoute(
       title: 'Inicio',
       icon: Icons.grid_view,
-      screen: HomeDashboard(),
+      screen: const HomeDashboard(),
     ),
     const AppRoute(
       title: 'Cuentas',

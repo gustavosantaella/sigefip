@@ -1,10 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:sigefip/shared/models/transaction_model.dart';
+import 'package:sigefip/shared/services/offline/transaction_service.dart';
+import 'package:sigefip/shared/services/data_sync_notifier.dart';
+import 'package:sigefip/shared/services/storage_service.dart';
 import 'accounts_section.dart';
 import '../../../../shared/widgets/transactions.dart';
 import 'quick_actions.dart';
 
-class HomeDashboard extends StatelessWidget {
+class HomeDashboard extends StatefulWidget {
   const HomeDashboard({super.key});
+
+  @override
+  State<HomeDashboard> createState() => _HomeDashboardState();
+}
+
+class _HomeDashboardState extends State<HomeDashboard> {
+  List<Transaction> _recentTransactions = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTransactions();
+    dataSyncNotifier.addListener(_loadTransactions);
+  }
+
+  @override
+  void dispose() {
+    dataSyncNotifier.removeListener(_loadTransactions);
+    super.dispose();
+  }
+
+  Future<void> _loadTransactions() async {
+    final transactions = await TransactionService.getTransactions();
+    // Sort by date descending
+    transactions.sort((a, b) => b.date.compareTo(a.date));
+
+    if (mounted) {
+      setState(() {
+        _recentTransactions = transactions.take(10).toList();
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,110 +97,62 @@ class HomeDashboard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          TransactionCard(
-            title: 'Cine y cena',
-            category: 'Entretenimiento',
-            account: 'Cuenta Principal',
-            date: '17 dic 2024',
-            amount: '-60,00 US\$',
-            color: Colors.purple,
-            icon: Icons.games_outlined,
-            isExpense: true,
-          ),
-          const SizedBox(height: 30),
-
-          TransactionCard(
-            title: 'Cine y cena',
-            category: 'Entretenimiento',
-            account: 'Cuenta Principal',
-            date: '17 dic 2024',
-            amount: '-60,00 US\$',
-            color: Colors.purple,
-            icon: Icons.games_outlined,
-            isExpense: true,
-          ),
-          const SizedBox(height: 30),
-
-          TransactionCard(
-            title: 'Cine y cena',
-            category: 'Entretenimiento',
-            account: 'Cuenta Principal',
-            date: '17 dic 2024',
-            amount: '-60,00 US\$',
-            color: Colors.purple,
-            icon: Icons.games_outlined,
-            isExpense: true,
-          ),
-          const SizedBox(height: 30),
-
-          TransactionCard(
-            title: 'Cine y cena',
-            category: 'Entretenimiento',
-            account: 'Cuenta Principal',
-            date: '17 dic 2024',
-            amount: '+60,00 US\$',
-            color: Colors.purple,
-            icon: Icons.add,
-            isExpense: false,
-          ),
-          const SizedBox(height: 20),
-        ],
-      ),
-    );
-  }
-}
-
-class _SummaryCard extends StatelessWidget {
-  final String title;
-  final String amount;
-  final IconData icon;
-  final Color iconColor;
-
-  const _SummaryCard({
-    required this.title,
-    required this.amount,
-    required this.icon,
-    required this.iconColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(color: Colors.grey, fontSize: 14),
-              ),
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
+          if (_isLoading)
+            const Center(child: CircularProgressIndicator())
+          else if (_recentTransactions.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Text(
+                  'No hay transacciones recientes',
+                  style: TextStyle(color: Colors.grey[500]),
                 ),
-                child: Icon(icon, color: iconColor, size: 16),
               ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            amount,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+            )
+          else
+            ..._recentTransactions.map(
+              (transaction) => Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: TransactionCard(
+                  title: transaction.title,
+                  category: transaction.category,
+                  account: transaction.account,
+                  date: transaction.date.toString(),
+                  amount: transaction.amount.toString(),
+                  color: transaction.color,
+                  icon:
+                      transaction.icon ??
+                      (transaction.isExpense ? Icons.remove : Icons.add),
+                  isExpense: transaction.isExpense,
+                ),
+              ),
+            ),
+          const SizedBox(height: 40),
+          Center(
+            child: TextButton.icon(
+              onPressed: () async {
+                await StorageService.instance.deleteAll();
+                dataSyncNotifier.notifyAccountChange();
+                dataSyncNotifier.notifyTransactionChange();
+                dataSyncNotifier.notifyCategoryChange();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Aplicación restablecida')),
+                  );
+                }
+              },
+              icon: const Icon(
+                Icons.refresh,
+                color: Colors.redAccent,
+                size: 16,
+              ),
+              label: const Text(
+                'DEBUG: Restablecer App',
+                style: TextStyle(color: Colors.redAccent, fontSize: 12),
+              ),
             ),
           ),
+          const SizedBox(height: 20),
         ],
       ),
     );

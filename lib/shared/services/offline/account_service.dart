@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:sigefip/shared/services/data_sync_notifier.dart';
 import 'package:sigefip/shared/models/account_model.dart';
 import 'package:sigefip/shared/services/storage_service.dart';
 
@@ -10,34 +12,66 @@ class AccountService {
     account.id = DateTime.now().millisecondsSinceEpoch.toString();
     account.name = account.name.trim().toUpperCase();
     await _storageService.pushToArray(_key, account.toMap());
+    dataSyncNotifier.notifyAccountChange();
   }
 
   static Future<List<Account>> getAccounts() async {
-    final dynamic data = await _storageService.getArray(_key);
-
-    // Seed only if the key doesn't exist at all (first time app launch)
-    if (data == null) {
-      await _seedAccounts();
-    }
-
     return await _storageService.getTypedArray<Account>(
       _key,
       (json) => Account.fromMap(json),
     );
   }
 
-  static Future<void> _seedAccounts() async {
-    final defaultAccount = Account(
-      name: 'CUENTA PRINCIPAL',
-      balance: 0.0,
-      currency: 'USD',
-      icon: Icons.account_balance_wallet,
-      color: const Color(0xFF6C63FF),
-    );
-    await storeAccount(defaultAccount);
-  }
-
   static Future<void> deleteAccount(String? id) async {
     await _storageService.removeFromArray(_key, id!);
+    dataSyncNotifier.notifyAccountChange();
+  }
+
+  static Future<void> updateAccountBalance(
+    String accountName,
+    double amount,
+    bool isExpense, {
+    bool isUndo = false,
+    double conversionRate = 1.0,
+  }) async {
+    final List<Account> accounts = await getAccounts();
+    final String targetName = accountName.trim().toUpperCase();
+
+    try {
+      final int index = accounts.indexWhere((a) => a.name == targetName);
+      if (index != -1) {
+        final account = accounts[index];
+        double multiplier = isExpense ? -1.0 : 1.0;
+        if (isUndo) multiplier *= -1.0;
+
+        // Ensure conversionRate is valid (not 0 or negative)
+        double rate = (conversionRate > 0) ? conversionRate : 1.0;
+        double finalImpact = amount * multiplier * rate;
+
+        debugPrint('--- [AccountService] Balance Sync Debug ---');
+        debugPrint('Account: ${account.name}');
+        debugPrint('Prev Balance: ${account.balance}');
+        debugPrint('Trans Amount: $amount');
+        debugPrint(
+          'Multiplier: $multiplier (Expense: $isExpense, Undo: $isUndo)',
+        );
+        debugPrint('Rate applied: $rate');
+        debugPrint('Final Impact: $finalImpact');
+
+        account.balance += finalImpact;
+
+        debugPrint('New Balance: ${account.balance}');
+        debugPrint('-------------------------------------------');
+
+        // Save the whole updated array
+        await _storageService.write(
+          _key,
+          json.encode(accounts.map((a) => a.toMap()).toList()),
+        );
+        dataSyncNotifier.notifyAccountChange();
+      }
+    } catch (e) {
+      debugPrint('Error updating account balance: $e');
+    }
   }
 }

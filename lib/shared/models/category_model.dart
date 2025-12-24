@@ -6,6 +6,7 @@ class Category {
   final IconData icon;
   final Color color;
   final String type; // 'Ingreso', 'Egreso', 'Ambos'
+  final bool isDefault;
 
   const Category({
     required this.id,
@@ -13,6 +14,7 @@ class Category {
     required this.icon,
     required this.color,
     required this.type,
+    this.isDefault = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -22,6 +24,7 @@ class Category {
       'icon': icon.codePoint,
       'color': color.value,
       'type': type,
+      'isDefault': isDefault,
     };
   }
 
@@ -32,6 +35,7 @@ class Category {
       icon: IconData(map['icon'] as int, fontFamily: 'MaterialIcons'),
       color: Color(map['color'] as int),
       type: map['type'],
+      isDefault: map['isDefault'] ?? false,
     );
   }
 }
