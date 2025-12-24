@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sigefip/shared/models/account_model.dart';
 import 'package:sigefip/shared/models/transaction_model.dart';
 import 'package:sigefip/shared/services/offline/account_service.dart';
@@ -22,6 +23,10 @@ class TransactionsScreen extends StatefulWidget {
 
 class _TransactionsScreenState extends State<TransactionsScreen> {
   List<Transaction> transactions = [];
+  List<Transaction> filteredTransactions = [];
+  String _selectedFilter = 'Todas'; // Todas, Ingresos, Egresos
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -31,10 +36,44 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
 
   void loadTransactions() async {
     transactions = await TransactionService.getTransactions();
-    print("Transactions: ${transactions.length}");
+    _applyFilters();
+  }
+
+  void _applyFilters() {
     setState(() {
-      transactions = transactions;
+      filteredTransactions = transactions.where((t) {
+        // Filter by Type
+        bool matchesType = true;
+        if (_selectedFilter == 'Ingresos') matchesType = !t.isExpense;
+        if (_selectedFilter == 'Egresos') matchesType = t.isExpense;
+
+        // Filter by Search Query
+        bool matchesSearch = true;
+        if (_searchQuery.isNotEmpty) {
+          final query = _searchQuery.toLowerCase();
+          matchesSearch =
+              t.title.toLowerCase().contains(query) ||
+              t.category.toLowerCase().contains(query) ||
+              t.account.toLowerCase().contains(query) ||
+              (t.note?.toLowerCase().contains(query) ?? false);
+        }
+
+        return matchesType && matchesSearch;
+      }).toList();
+      // Sort by date descending
+      filteredTransactions.sort((a, b) => b.date.compareTo(a.date));
     });
+  }
+
+  void _showTransactionDetails(Transaction transaction) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1E1E1E),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
+      builder: (context) => _TransactionDetailSheet(transaction: transaction),
+    );
   }
 
   @override
@@ -90,9 +129,14 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.white10),
                       ),
-                      child: const TextField(
-                        style: TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
+                      child: TextField(
+                        controller: _searchController,
+                        style: const TextStyle(color: Colors.white),
+                        onChanged: (value) {
+                          _searchQuery = value;
+                          _applyFilters();
+                        },
+                        decoration: const InputDecoration(
                           icon: Icon(Icons.search, color: Colors.grey),
                           hintText: 'Buscar transacciones...',
                           hintStyle: TextStyle(color: Colors.grey),
@@ -107,11 +151,32 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          _FilterChip(label: 'Todas', isSelected: true),
+                          _FilterChip(
+                            label: 'Todas',
+                            isSelected: _selectedFilter == 'Todas',
+                            onTap: () {
+                              setState(() => _selectedFilter = 'Todas');
+                              _applyFilters();
+                            },
+                          ),
                           const SizedBox(width: 12),
-                          _FilterChip(label: 'Ingresos', isSelected: false),
+                          _FilterChip(
+                            label: 'Ingresos',
+                            isSelected: _selectedFilter == 'Ingresos',
+                            onTap: () {
+                              setState(() => _selectedFilter = 'Ingresos');
+                              _applyFilters();
+                            },
+                          ),
                           const SizedBox(width: 12),
-                          _FilterChip(label: 'Egresos', isSelected: false),
+                          _FilterChip(
+                            label: 'Egresos',
+                            isSelected: _selectedFilter == 'Egresos',
+                            onTap: () {
+                              setState(() => _selectedFilter = 'Egresos');
+                              _applyFilters();
+                            },
+                          ),
                         ],
                       ),
                     ),
@@ -121,52 +186,53 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: transactions.length,
+                      itemCount: filteredTransactions.length,
                       itemBuilder: (context, index) {
+                        final transaction = filteredTransactions[index];
                         return Column(
                           children: [
                             SlideCard<Transaction>(
-                              key: ValueKey(transactions[index].id),
-                              item: transactions[index],
+                              key: ValueKey(transaction.id),
+                              item: transaction,
                               borderRadius: BorderRadius.circular(16),
                               rightOptions: [
                                 SlideAction<Transaction>(
                                   icon: Icons.delete,
                                   color: Colors.red,
-                                  onPressed: (transaction) async {
-                                    await TransactionService.delete(
-                                      transaction.id,
-                                    );
-
-                                    transactions.remove(transaction);
-
-                                    setState(() {
-                                      transactions = transactions;
-                                    });
-
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          'Delete ${transaction.title}',
+                                  onPressed: (t) async {
+                                    await TransactionService.delete(t.id);
+                                    loadTransactions();
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'Eliminado: ${t.title}',
+                                          ),
                                         ),
-                                      ),
-                                    );
+                                      );
+                                    }
                                   },
                                 ),
                               ],
-                              child: TransactionCard(
-                                title: transactions[index].title,
-                                category: transactions[index].category,
-                                account: transactions[index].account,
-                                date: transactions[index].date.toString(),
-                                amount: transactions[index].amount.toString(),
-                                color: transactions[index].color,
-                                icon:
-                                    transactions[index].icon ??
-                                    (transactions[index].isExpense
-                                        ? Icons.remove
-                                        : Icons.add),
-                                isExpense: transactions[index].isExpense,
+                              child: GestureDetector(
+                                onTap: () =>
+                                    _showTransactionDetails(transaction),
+                                child: TransactionCard(
+                                  title: transaction.title,
+                                  category: transaction.category,
+                                  account: transaction.account,
+                                  date: transaction.date.toString(),
+                                  amount: transaction.amount.toString(),
+                                  color: transaction.color,
+                                  icon:
+                                      transaction.icon ??
+                                      (transaction.isExpense
+                                          ? Icons.remove
+                                          : Icons.add),
+                                  isExpense: transaction.isExpense,
+                                ),
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -200,24 +266,120 @@ class TransactionState {
 class _FilterChip extends StatelessWidget {
   final String label;
   final bool isSelected;
+  final VoidCallback onTap;
 
-  const _FilterChip({required this.label, required this.isSelected});
+  const _FilterChip({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      decoration: BoxDecoration(
-        color: isSelected ? Colors.white : const Color(0xFF1E1E1E),
-        borderRadius: BorderRadius.circular(12),
-        border: isSelected ? null : Border.all(color: Colors.white10),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: isSelected ? Colors.black : Colors.white,
-          fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.white : const Color(0xFF1E1E1E),
+          borderRadius: BorderRadius.circular(12),
+          border: isSelected ? null : Border.all(color: Colors.white10),
         ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.black : Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TransactionDetailSheet extends StatelessWidget {
+  final Transaction transaction;
+
+  const _TransactionDetailSheet({required this.transaction});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomBottomSheet(
+      title: 'Detalle de Transacción',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildDetailRow(Icons.title, 'Título', transaction.title),
+          _buildDetailRow(
+            transaction.icon ?? Icons.category,
+            'Categoría',
+            transaction.category,
+            iconColor: transaction.color,
+          ),
+          _buildDetailRow(
+            Icons.account_balance_wallet,
+            'Cuenta',
+            transaction.account,
+          ),
+          _buildDetailRow(
+            Icons.money,
+            'Monto',
+            '${transaction.isExpense ? "-" : "+"}\$ ${transaction.amount}',
+            textColor: transaction.isExpense ? Colors.redAccent : Colors.green,
+          ),
+          if (transaction.conversionRate != 1.0)
+            _buildDetailRow(
+              Icons.currency_exchange,
+              'Tasa de Conversión',
+              '${transaction.conversionRate}',
+            ),
+          _buildDetailRow(
+            Icons.calendar_today,
+            'Fecha',
+            DateFormat('dd/MM/yyyy HH:mm').format(transaction.date),
+          ),
+          if (transaction.note?.isNotEmpty ?? false)
+            _buildDetailRow(Icons.note, 'Nota', transaction.note!),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(
+    IconData icon,
+    String label,
+    String value, {
+    Color? iconColor,
+    Color? textColor,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: iconColor ?? Colors.grey[600], size: 24),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: TextStyle(
+                    color: textColor ?? Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

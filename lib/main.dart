@@ -3,6 +3,7 @@ import 'package:sigefip/modules/screens/accounts/accounts_screen.dart';
 import 'package:sigefip/modules/screens/budget/budget_screen.dart';
 import 'package:sigefip/modules/screens/calendar/calendar_screen.dart';
 import 'package:sigefip/modules/screens/categories/categories_screen.dart';
+import 'package:sigefip/modules/screens/metrics/metrics_screen.dart';
 import 'package:sigefip/modules/screens/home/home_screen.dart';
 import 'package:sigefip/core/constants/theme.dart' as constants;
 import 'package:sigefip/modules/screens/transaction/transactions_screen.dart';
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
         '/transactions': (context) => const TransactionsScreen(),
         '/categories': (context) => const CategoriesScreen(),
         '/calendar': (context) => const CalendarScreen(),
+        '/metrics': (context) => const MetricsScreen(),
       },
     );
   }

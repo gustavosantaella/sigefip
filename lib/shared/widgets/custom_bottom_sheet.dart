@@ -41,8 +41,8 @@ class CustomBottomSheet extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          child,
-          const SizedBox(height: 30),
+          Flexible(child: SingleChildScrollView(child: child)),
+          const SizedBox(height: 10),
         ],
       ),
     );

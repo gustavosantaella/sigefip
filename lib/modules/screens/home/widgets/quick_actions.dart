@@ -31,6 +31,14 @@ class QuickActionsSection extends StatelessWidget {
             Navigator.pushNamed(context, '/budget');
           },
         ),
+        const SizedBox(width: 24),
+        _QuickAction(
+          icon: Icons.analytics_outlined,
+          label: 'Métricas',
+          onTap: () {
+            Navigator.pushNamed(context, '/metrics');
+          },
+        ),
       ],
     );
   }
