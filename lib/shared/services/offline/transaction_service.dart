@@ -21,4 +21,8 @@ class TransactionService {
       (json) => Transaction.fromMap(json),
     );
   }
+
+  static Future<void> delete(String? id) async {
+    await storageService.removeFromArray("transactions", id!);
+  }
 }

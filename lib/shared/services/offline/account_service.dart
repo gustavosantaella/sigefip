@@ -13,17 +13,17 @@ class AccountService {
   }
 
   static Future<List<Account>> getAccounts() async {
-    List<Account> accounts = await _storageService.getTypedArray<Account>(
+    final dynamic data = await _storageService.getArray(_key);
+
+    // Seed only if the key doesn't exist at all (first time app launch)
+    if (data == null) {
+      await _seedAccounts();
+    }
+
+    return await _storageService.getTypedArray<Account>(
       _key,
       (json) => Account.fromMap(json),
     );
-
-    if (accounts.isEmpty) {
-      await _seedAccounts();
-      accounts = await getAccounts();
-    }
-
-    return accounts;
   }
 
   static Future<void> _seedAccounts() async {
@@ -35,5 +35,9 @@ class AccountService {
       color: const Color(0xFF6C63FF),
     );
     await storeAccount(defaultAccount);
+  }
+
+  static Future<void> deleteAccount(String? id) async {
+    await _storageService.removeFromArray(_key, id!);
   }
 }

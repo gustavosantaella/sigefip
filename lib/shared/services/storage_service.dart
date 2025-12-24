@@ -15,7 +15,7 @@ class StorageService {
   }
 
   Future<void> pushToArray(String key, Map<String, dynamic> item) async {
-    final List<dynamic> existingList = await getArray(key);
+    final List<dynamic> existingList = (await getArray(key)) ?? [];
     existingList.add(item);
     await write(key, json.encode(existingList));
   }
@@ -24,15 +24,16 @@ class StorageService {
     String key,
     T Function(Map<String, dynamic>) fromJson,
   ) async {
-    final List<dynamic> list = await getArray(key);
+    final List<dynamic> list = (await getArray(key)) ?? [];
     return list
         .map((e) => fromJson(Map<String, dynamic>.from(e as Map)))
         .toList();
   }
 
-  Future<List<dynamic>> getArray(String key) async {
+  Future<List<dynamic>?> getArray(String key) async {
     final String? value = await read(key);
-    if (value == null || value.isEmpty) return [];
+    if (value == null) return null;
+    if (value.isEmpty) return [];
     try {
       final decoded = json.decode(value);
       if (decoded is List) return decoded;
@@ -52,5 +53,11 @@ class StorageService {
 
   Future<void> deleteAll() async {
     await _storage.deleteAll();
+  }
+
+  Future<void> removeFromArray(String key, String id) async {
+    final List<dynamic> existingList = (await getArray(key)) ?? [];
+    existingList.removeWhere((item) => item['id'] == id);
+    await write(key, json.encode(existingList));
   }
 }

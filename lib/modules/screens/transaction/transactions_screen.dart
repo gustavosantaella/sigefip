@@ -126,30 +126,28 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                         return Column(
                           children: [
                             SlideCard<Transaction>(
+                              key: ValueKey(transactions[index].id),
                               item: transactions[index],
                               borderRadius: BorderRadius.circular(16),
                               rightOptions: [
                                 SlideAction<Transaction>(
                                   icon: Icons.delete,
                                   color: Colors.red,
-                                  onPressed: (transaction) {
+                                  onPressed: (transaction) async {
+                                    await TransactionService.delete(
+                                      transaction.id,
+                                    );
+
+                                    transactions.remove(transaction);
+
+                                    setState(() {
+                                      transactions = transactions;
+                                    });
+
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
                                           'Delete ${transaction.title}',
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                                SlideAction<Transaction>(
-                                  icon: Icons.edit,
-                                  color: Colors.yellow,
-                                  onPressed: (transaction) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          'Edit ${transaction.title}',
                                         ),
                                       ),
                                     );
