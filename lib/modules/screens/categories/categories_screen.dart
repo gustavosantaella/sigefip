@@ -1,65 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:sigefip/shared/models/category_model.dart';
+import 'package:sigefip/shared/services/offline/category_service.dart';
 import '../../../../shared/widgets/custom_back_button.dart';
 import '../../../../shared/widgets/custom_bottom_sheet.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 import '../../../../shared/widgets/type_chip.dart';
 
-class CategoriesScreen extends StatelessWidget {
+class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Mock Data
-    final List<Map<String, dynamic>> categories = [
-      {
-        'icon': Icons.restaurant,
-        'color': const Color(0xFFFF5252),
-        'name': 'Comida',
-      },
-      {
-        'icon': Icons.directions_bus,
-        'color': const Color(0xFF448AFF),
-        'name': 'Transporte',
-      },
-      {
-        'icon': Icons.shopping_bag,
-        'color': const Color(0xFFE040FB),
-        'name': 'Compras',
-      },
-      {
-        'icon': Icons.bolt,
-        'color': const Color(0xFFFFAB40),
-        'name': 'Servicios',
-      },
-      {
-        'icon': Icons.movie,
-        'color': const Color(0xFF69F0AE),
-        'name': 'Entretenimiento',
-      },
-      {
-        'icon': Icons.medical_services,
-        'color': const Color(0xFFEF5350),
-        'name': 'Salud',
-      },
-      {
-        'icon': Icons.school,
-        'color': const Color(0xFF536DFE),
-        'name': 'Educación',
-      },
-      {
-        'icon': Icons.card_giftcard,
-        'color': const Color(0xFFFF6E40),
-        'name': 'Regalos',
-      },
-      {
-        'icon': Icons.savings,
-        'color': const Color(0xFF4DB6AC),
-        'name': 'Ahorros',
-      },
-      {'icon': Icons.more_horiz, 'color': Colors.grey, 'name': 'Otros'},
-    ];
+  State<CategoriesScreen> createState() => _CategoriesScreenState();
+}
 
+class _CategoriesScreenState extends State<CategoriesScreen> {
+  List<Category> categories = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    final loadedCategories = await CategoryService.getCategories();
+    setState(() {
+      categories = loadedCategories;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -109,20 +81,18 @@ class CategoriesScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: (category['color'] as Color).withOpacity(
-                              0.1,
-                            ),
+                            color: category.color.withOpacity(0.1),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
-                            category['icon'] as IconData,
-                            color: category['color'] as Color,
+                            category.icon,
+                            color: category.color,
                             size: 32,
                           ),
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          category['name'] as String,
+                          category.name,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -147,7 +117,8 @@ class CategoriesScreen extends StatelessWidget {
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
             ),
-            builder: (context) => const AddCategoryForm(),
+            builder: (context) =>
+                AddCategoryForm(onCategoryAdded: _loadCategories),
           );
         },
         backgroundColor: const Color(0xFF6C63FF),
@@ -158,7 +129,9 @@ class CategoriesScreen extends StatelessWidget {
 }
 
 class AddCategoryForm extends StatefulWidget {
-  const AddCategoryForm({super.key});
+  final VoidCallback onCategoryAdded;
+
+  const AddCategoryForm({super.key, required this.onCategoryAdded});
 
   @override
   State<AddCategoryForm> createState() => _AddCategoryFormState();
@@ -374,9 +347,18 @@ class _AddCategoryFormState extends State<AddCategoryForm> {
 
           CustomButton(
             text: 'Guardar Categoría',
-            onPressed: () {
-              // Logic to save
-              Navigator.pop(context);
+            onPressed: () async {
+              final newCategory = Category(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                name: _nameController.text,
+                icon: _selectedIcon,
+                color: _selectedColor,
+                type: _categoryType,
+              );
+
+              await CategoryService.store(newCategory);
+              widget.onCategoryAdded();
+              if (mounted) Navigator.pop(context);
             },
           ),
           const SizedBox(height: 16),

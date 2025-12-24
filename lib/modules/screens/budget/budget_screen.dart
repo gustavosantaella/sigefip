@@ -7,6 +7,7 @@ import '../../../shared/widgets/custom_dropdown.dart';
 import '../../../shared/widgets/custom_button.dart';
 import '../../../shared/widgets/custom_text_field.dart';
 import '../../../shared/widgets/type_chip.dart';
+import '../../../shared/widgets/custom_date_picker.dart';
 
 class BudgetScreen extends StatefulWidget {
   const BudgetScreen({super.key});
@@ -27,6 +28,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
     'Semestral',
     'Anual',
     'Eventualmente',
+    'Personalizado',
   ];
 
   // Mock Data
@@ -312,6 +314,8 @@ class _AddBudgetFormState extends State<AddBudgetForm> {
   String? _selectedConcurrency;
   String _budgetType = 'Egreso'; // 'Ingreso' or 'Egreso'
   final TextEditingController _limitController = TextEditingController();
+  DateTime? _startDate;
+  DateTime? _endDate;
 
   final List<String> _concurrencies = [
     'Diario',
@@ -321,6 +325,7 @@ class _AddBudgetFormState extends State<AddBudgetForm> {
     'Semestral',
     'Anual',
     'Eventualmente',
+    'Personalizado',
   ];
 
   // Mock Categories for Dropdown
@@ -403,6 +408,30 @@ class _AddBudgetFormState extends State<AddBudgetForm> {
             itemLabelBuilder: (item) => item,
             onChanged: (val) => setState(() => _selectedConcurrency = val),
           ),
+
+          if (_selectedConcurrency == 'Personalizado') ...[
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: CustomDatePicker(
+                    label: 'Desde',
+                    selectedDate: _startDate,
+                    onDateSelected: (date) => setState(() => _startDate = date),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: CustomDatePicker(
+                    label: 'Hasta',
+                    selectedDate: _endDate,
+                    onDateSelected: (date) => setState(() => _endDate = date),
+                    firstDate: _startDate,
+                  ),
+                ),
+              ],
+            ),
+          ],
 
           const SizedBox(height: 30),
 

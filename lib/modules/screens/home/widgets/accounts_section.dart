@@ -1,10 +1,40 @@
 import 'package:flutter/material.dart';
+import '../../../../shared/models/account_model.dart';
+import '../../../../shared/services/offline/account_service.dart';
 
-class AccountsSection extends StatelessWidget {
+class AccountsSection extends StatefulWidget {
   const AccountsSection({super.key});
 
   @override
+  State<AccountsSection> createState() => _AccountsSectionState();
+}
+
+class _AccountsSectionState extends State<AccountsSection> {
+  List<Account> _accounts = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAccounts();
+  }
+
+  Future<void> _loadAccounts() async {
+    final accounts = await AccountService.getAccounts();
+    if (mounted) {
+      setState(() {
+        _accounts = accounts;
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -19,23 +49,21 @@ class AccountsSection extends StatelessWidget {
         const SizedBox(height: 16),
         SizedBox(
           height: 160,
-          child: ListView(
+          child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            children: [
-              _AccountCard(
-                color: const Color(0xFF7C4DFF),
-                title: 'Cuenta Principal',
-                balance: '5420,50 US\$',
-                isSelected: true,
-              ),
-              const SizedBox(width: 16),
-              _AccountCard(
-                color: const Color(0xFF4CAF50),
-                title: 'Ahorros',
-                balance: '1200,00 US\$',
-                isSelected: false,
-              ),
-            ],
+            itemCount: _accounts.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 16),
+            itemBuilder: (context, index) {
+              final account = _accounts[index];
+              return _AccountCard(
+                color: account.color,
+                title: account.name,
+                balance:
+                    '${account.balance.toStringAsFixed(2)} ${account.currency ?? 'USD'}',
+                currency: account.currency ?? 'USD',
+                isSelected: index == 0,
+              );
+            },
           ),
         ),
       ],
@@ -47,12 +75,14 @@ class _AccountCard extends StatelessWidget {
   final Color color;
   final String title;
   final String balance;
+  final String currency;
   final bool isSelected;
 
   const _AccountCard({
     required this.color,
     required this.title,
     required this.balance,
+    required this.currency,
     required this.isSelected,
   });
 
@@ -72,9 +102,9 @@ class _AccountCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'USD',
-                style: TextStyle(color: Colors.white70, fontSize: 14),
+              Text(
+                currency,
+                style: const TextStyle(color: Colors.white70, fontSize: 14),
               ),
               if (isSelected)
                 Container(

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:sigefip/shared/models/base_model.dart';
 
 class Account {
-  final String? id;
-  final String name;
+  String? id;
+  String name;
   final double balance;
   final String? currency;
   final IconData icon;
   final Color color;
 
-  const Account({
+  Account({
     this.id,
     required this.name,
     required this.balance,

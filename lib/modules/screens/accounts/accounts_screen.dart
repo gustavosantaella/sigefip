@@ -16,7 +16,6 @@ class AccountsScreen extends StatefulWidget {
 
 class _AccountsScreenState extends State<AccountsScreen> {
   List<Account> accounts = [];
-  final AccountService accountService = AccountService();
 
   @override
   void initState() {
@@ -25,9 +24,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
   }
 
   void loadAccounts() async {
-    print("Loading accounts");
-    final List<Account> accounts = await accountService.getAccounts();
-    print(accounts);
+    final List<Account> accounts = await AccountService.getAccounts();
     setState(() {
       this.accounts = accounts;
     });
@@ -166,8 +163,6 @@ class _AddAccountFormState extends State<AddAccountForm> {
   String? _selectedCurrency;
   Color _selectedColor = const Color(0xFF6C63FF);
 
-  final AccountService _accountService = AccountService();
-
   final List<Color> _availableColors = [
     const Color(0xFF6C63FF),
     const Color(0xFF4CAF50),
@@ -247,13 +242,13 @@ class _AddAccountFormState extends State<AddAccountForm> {
             onPressed: () async {
               final account = Account(
                 name: _nameController.text,
-                balance: double.parse(_balanceController.text),
+                balance: double.tryParse(_balanceController.text) ?? 0.0,
                 currency: _selectedCurrency!,
                 icon: Icons.money,
                 color: _selectedColor,
               );
 
-              await _accountService.storeAccount(account);
+              await AccountService.storeAccount(account);
               widget.loadAccounts();
 
               if (mounted) {
