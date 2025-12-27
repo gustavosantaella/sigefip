@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/nav_item.dart';
 import '../../router/routes.dart';
+import '../../../shared/services/voice_service.dart';
+import '../../../shared/services/transaction_parser_service.dart';
+import '../../../shared/services/offline/transaction_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,17 +14,125 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  final VoiceService _voiceService = VoiceService();
+  bool _isListening = false;
+  bool _isProcessing = false;
+  String _recognizedText = "Escuchando...";
+
+  Future<void> _startListening() async {
+    final available = await _voiceService.init();
+    if (available) {
+      setState(() {
+        _isListening = true;
+        _recognizedText = "Escuchando...";
+      });
+      _voiceService.startListening((text) async {
+        setState(() {
+          _recognizedText = text;
+          _isProcessing = true;
+        });
+        // Process the result after a short delay to let the user see what was recognized
+        await Future.delayed(const Duration(milliseconds: 800));
+        await _processVoiceTransaction(text);
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Reconocimiento de voz no disponible o sin permisos'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _processVoiceTransaction(String text) async {
+    final transaction = await TransactionParserService.parseVoiceText(text);
+    if (transaction != null) {
+      await TransactionService.store(transaction);
+      if (mounted) {
+        setState(() {
+          _isListening = false;
+          _isProcessing = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Transacción creada: ${transaction.isExpense ? "-" : "+"}${transaction.amount} en ${transaction.category}',
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+          _isListening = false;
+          _isProcessing = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'No pude entender la transacción. Intenta decir: "Gaste 30 en comida"',
+            ),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: IndexedStack(
-          index: _currentIndex,
-          children: MainRouter.routes.map((route) => route.screen).toList(),
+        child: Stack(
+          children: [
+            IndexedStack(
+              index: _currentIndex,
+              children: MainRouter.routes.map((route) => route.screen).toList(),
+            ),
+            if (_isListening)
+              Container(
+                color: Colors.black87,
+                width: double.infinity,
+                height: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.mic, color: Colors.blue, size: 80),
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: Text(
+                        _recognizedText,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    TextButton(
+                      onPressed: () => setState(() => _isListening = false),
+                      child: const Text(
+                        'Cancelar',
+                        style: TextStyle(color: Colors.redAccent),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
         ),
       ),
+      floatingActionButton: _currentIndex == 0
+          ? FloatingActionButton(
+              onPressed: _isListening ? null : _startListening,
+              backgroundColor: const Color(0xFF6C63FF),
+              child: const Icon(Icons.mic, color: Colors.white),
+            )
+          : null,
       bottomNavigationBar: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         padding: const EdgeInsets.symmetric(vertical: 8),
