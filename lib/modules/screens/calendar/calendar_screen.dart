@@ -117,32 +117,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
             ),
 
-            // Monthly Summary
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _buildSummaryCard(
-                      label: 'Ingresos Mes',
-                      amount: _monthIncome,
-                      color: Colors.green,
-                      icon: Icons.arrow_upward,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildSummaryCard(
-                      label: 'Gastos Mes',
-                      amount: _monthExpense,
-                      color: Colors.red,
-                      icon: Icons.arrow_downward,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
             const SizedBox(height: 10),
 
             // Calendar View
