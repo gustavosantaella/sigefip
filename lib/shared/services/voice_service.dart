@@ -1,12 +1,25 @@
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:flutter/foundation.dart';
 
 class VoiceService {
   final SpeechToText _speech = SpeechToText();
+  final FlutterTts _tts = FlutterTts();
   bool _isAvailable = false;
 
   Future<bool> init() async {
     if (_isAvailable) return true;
+
+    // Initialize TTS
+    try {
+      await _tts.setLanguage("es-ES");
+      await _tts.setPitch(1.0);
+      await _tts.setSpeechRate(0.5);
+    } catch (e) {
+      debugPrint("Error initializing TTS: $e");
+      // Fallback or continue as voice recognition might still work
+    }
 
     // Check and request microphone permission
     var status = await Permission.microphone.status;
@@ -41,6 +54,10 @@ class VoiceService {
 
   void stopListening() {
     _speech.stop();
+  }
+
+  Future<void> speak(String text) async {
+    await _tts.speak(text);
   }
 
   bool get isListening => _speech.isListening;

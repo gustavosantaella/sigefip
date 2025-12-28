@@ -52,9 +52,18 @@ class CategoryService {
     return allCategories;
   }
 
-  static Future<Category> getByName(String name) async {
+  static Future<Category> getByName(String name, bool isExpense) async {
     List<Category> categories = await getCategories();
-    return categories.where((category) => category.name == name).first;
+    return categories.firstWhere(
+      (category) =>
+          category.name.toLowerCase() == name.toLowerCase() &&
+          (isExpense ? category.type == 'Egreso' : category.type == 'Ingreso'),
+      orElse: () => categories.firstWhere(
+        (c) => isExpense
+            ? (c.name == 'Otros' && c.type == 'Egreso')
+            : (c.name == 'Otros Ingresos' && c.type == 'Ingreso'),
+      ),
+    );
   }
 
   static Future<void> delete(String id) async {

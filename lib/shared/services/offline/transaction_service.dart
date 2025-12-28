@@ -10,7 +10,10 @@ class TransactionService {
 
   static Future<void> store(Transaction transaction) async {
     transaction.id = DateTime.now().millisecondsSinceEpoch.toString();
-    Category category = await CategoryService.getByName(transaction.category);
+    Category category = await CategoryService.getByName(
+      transaction.category,
+      transaction.isExpense,
+    );
     transaction.icon = category.icon;
     transaction.color = category.color;
 

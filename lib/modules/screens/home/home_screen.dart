@@ -45,36 +45,55 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _processVoiceTransaction(String text) async {
-    final transaction = await TransactionParserService.parseVoiceText(text);
-    if (transaction != null) {
-      await TransactionService.store(transaction);
-      if (mounted) {
-        setState(() {
-          _isListening = false;
-          _isProcessing = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Transacción creada: ${transaction.isExpense ? "-" : "+"}${transaction.amount} en ${transaction.category}',
+    try {
+      await _voiceService.speak("Vale, estoy procesando tu solicitud");
+
+      final transaction = await TransactionParserService.parseVoiceText(text);
+      if (transaction != null) {
+        await TransactionService.store(transaction);
+        if (mounted) {
+          setState(() {
+            _isListening = false;
+            _isProcessing = false;
+          });
+
+          await _voiceService.speak(
+            transaction.isExpense ? "Egreso agregado" : "Ingreso agregado",
+          );
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Transacción creada: ${transaction.isExpense ? "-" : "+"}${transaction.amount} en ${transaction.category}',
+              ),
+              backgroundColor: Colors.green,
             ),
-            backgroundColor: Colors.green,
-          ),
-        );
+          );
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            _isListening = false;
+            _isProcessing = false;
+          });
+          await _voiceService.speak("Lo siento sucedió un error");
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'No pude entender la transacción. Intenta decir: "Gaste 30 en comida"',
+              ),
+            ),
+          );
+        }
       }
-    } else {
+    } catch (e) {
+      debugPrint("Error processing voice transaction: $e");
       if (mounted) {
         setState(() {
           _isListening = false;
           _isProcessing = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'No pude entender la transacción. Intenta decir: "Gaste 30 en comida"',
-            ),
-          ),
-        );
+        await _voiceService.speak("Lo siento sucedió un error");
       }
     }
   }
@@ -98,7 +117,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.mic, color: Colors.blue, size: 80),
+                    _isProcessing
+                        ? const CircularProgressIndicator(color: Colors.blue)
+                        : const Icon(Icons.mic, color: Colors.blue, size: 80),
                     const SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 40),

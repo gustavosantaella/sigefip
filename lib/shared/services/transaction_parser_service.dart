@@ -57,7 +57,8 @@ class TransactionParserService {
     final finalAccount =
         matchedAccount?.name ??
         (accounts.isNotEmpty ? accounts.first.name : 'Efectivo');
-    final finalCategory = matchedCategory?.name ?? 'Otros';
+    final finalCategory =
+        matchedCategory?.name ?? (isExpense ? 'Otros' : 'Otros Ingresos');
 
     return Transaction(
       title: text, // Use the original recognized text as title

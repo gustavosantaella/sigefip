@@ -71,6 +71,13 @@ const expensesCategories = [
     "name": "Regalos",
     "color": Colors.red,
   },
+  {
+    "uuid": "dfe-11",
+    "icon": Icons.more_horiz_outlined,
+    "type": "expense",
+    "name": "Otros",
+    "color": Colors.red,
+  },
 ];
 
 const incomeCategories = [
