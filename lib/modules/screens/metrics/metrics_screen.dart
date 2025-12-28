@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sigefip/shared/models/transaction_model.dart';
 import 'package:sigefip/shared/services/offline/transaction_service.dart';
+import 'package:sigefip/shared/services/offline/account_service.dart';
+import 'package:sigefip/shared/models/account_model.dart';
 import '../../../shared/widgets/custom_back_button.dart';
 import '../../../shared/widgets/type_chip.dart';
 
@@ -17,6 +19,7 @@ class _MetricsScreenState extends State<MetricsScreen> {
   DateTimeRange? _customRange;
   List<Transaction> _allTransactions = [];
   List<Transaction> _filteredTransactions = [];
+  List<Account> _accounts = [];
   bool _isLoading = true;
 
   @override
@@ -27,9 +30,11 @@ class _MetricsScreenState extends State<MetricsScreen> {
 
   Future<void> _loadData() async {
     final transactions = await TransactionService.getTransactions();
+    final accounts = await AccountService.getAccounts();
     if (mounted) {
       setState(() {
         _allTransactions = transactions;
+        _accounts = accounts;
         _isLoading = false;
         _applyFilter();
       });
@@ -44,6 +49,10 @@ class _MetricsScreenState extends State<MetricsScreen> {
           return t.date.isAfter(now.subtract(const Duration(days: 7)));
         } else if (_selectedPeriod == 'Mensual') {
           return t.date.month == now.month && t.date.year == now.year;
+        } else if (_selectedPeriod == "Diario") {
+          return t.date.day == now.day &&
+              t.date.month == now.month &&
+              t.date.year == now.year;
         } else if (_selectedPeriod == 'Anual') {
           return t.date.year == now.year;
         } else if (_selectedPeriod == 'Intervalo' && _customRange != null) {
@@ -86,16 +95,21 @@ class _MetricsScreenState extends State<MetricsScreen> {
                     const SizedBox(height: 30),
 
                     // Filter Chips
-                    Row(
-                      children: [
-                        _buildFilterChip('Semanal'),
-                        const SizedBox(width: 12),
-                        _buildFilterChip('Mensual'),
-                        const SizedBox(width: 12),
-                        _buildFilterChip('Anual'),
-                        const SizedBox(width: 12),
-                        _buildFilterChip('Intervalo'),
-                      ],
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _buildFilterChip('Diario'),
+                          const SizedBox(width: 12),
+                          _buildFilterChip('Semanal'),
+                          const SizedBox(width: 12),
+                          _buildFilterChip('Mensual'),
+                          const SizedBox(width: 12),
+                          _buildFilterChip('Anual'),
+                          const SizedBox(width: 12),
+                          _buildFilterChip('Intervalo'),
+                        ],
+                      ),
                     ),
                     if (_selectedPeriod == 'Intervalo' &&
                         _customRange != null) ...[
@@ -137,7 +151,6 @@ class _MetricsScreenState extends State<MetricsScreen> {
                     ),
                     const SizedBox(height: 20),
                     _buildCategoryChart(isExpense: false),
-
                     const SizedBox(height: 40),
                     _buildAccountUsageSection(),
                     const SizedBox(height: 40),
@@ -150,148 +163,188 @@ class _MetricsScreenState extends State<MetricsScreen> {
 
   Widget _buildFilterChip(String label) {
     final isSelected = _selectedPeriod == label;
-    return Expanded(
-      child: TypeChip(
-        label: label,
-        isSelected: isSelected,
-        color: const Color(0xFF6C63FF),
-        onTap: () async {
-          if (label == 'Intervalo') {
-            final picked = await showDateRangePicker(
-              context: context,
-              firstDate: DateTime(2020),
-              lastDate: DateTime(2030),
-              initialDateRange: _customRange,
-              builder: (context, child) {
-                return Theme(
-                  data: Theme.of(context).copyWith(
-                    colorScheme: const ColorScheme.dark(
-                      primary: Color(0xFF6C63FF),
-                      onPrimary: Colors.white,
-                      surface: Color(0xFF1E1E1E),
-                      onSurface: Colors.white,
-                    ),
+    return TypeChip(
+      label: label,
+      isSelected: isSelected,
+      color: const Color(0xFF6C63FF),
+      onTap: () async {
+        if (label == 'Intervalo') {
+          final picked = await showDateRangePicker(
+            context: context,
+            firstDate: DateTime(2020),
+            lastDate: DateTime(2030),
+            initialDateRange: _customRange,
+            builder: (context, child) {
+              return Theme(
+                data: Theme.of(context).copyWith(
+                  colorScheme: const ColorScheme.dark(
+                    primary: Color(0xFF6C63FF),
+                    onPrimary: Colors.white,
+                    surface: Color(0xFF1E1E1E),
+                    onSurface: Colors.white,
                   ),
-                  child: child!,
-                );
-              },
-            );
+                ),
+                child: child!,
+              );
+            },
+          );
 
-            if (picked != null) {
-              setState(() {
-                _selectedPeriod = label;
-                _customRange = picked;
-                _applyFilter();
-              });
-            }
-          } else {
+          if (picked != null) {
             setState(() {
               _selectedPeriod = label;
+              _customRange = picked;
               _applyFilter();
             });
           }
-        },
-      ),
+        } else {
+          setState(() {
+            _selectedPeriod = label;
+            _applyFilter();
+          });
+        }
+      },
     );
   }
 
   Widget _buildSummarySection() {
-    double totalIncome = 0;
-    double totalExpense = 0;
+    final Map<String, Map<String, double>> accountStats = {};
 
     for (var t in _filteredTransactions) {
+      final accountKey = t.account.trim().toUpperCase();
+      accountStats.putIfAbsent(accountKey, () => {'income': 0, 'expense': 0});
       if (t.isExpense) {
-        totalExpense += t.amount * t.conversionRate;
+        accountStats[accountKey]!['expense'] =
+            accountStats[accountKey]!['expense']! +
+            (t.amount * t.conversionRate);
       } else {
-        totalIncome += t.amount * t.conversionRate;
+        accountStats[accountKey]!['income'] =
+            accountStats[accountKey]!['income']! +
+            (t.amount * t.conversionRate);
       }
     }
 
+    if (accountStats.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E1E1E),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: const Center(
+          child: Text(
+            'No hay transacciones en este periodo',
+            style: TextStyle(color: Colors.grey),
+          ),
+        ),
+      );
+    }
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            _buildSummaryCard(
-              'Ingresos',
-              totalIncome,
-              Colors.green,
-              Icons.arrow_upward,
-            ),
-            const SizedBox(width: 16),
-            _buildSummaryCard(
-              'Gastos',
-              totalExpense,
-              Colors.redAccent,
-              Icons.arrow_downward,
-            ),
-          ],
+        const Text(
+          'Resumen por Cuenta',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        const SizedBox(height: 16),
-        _buildSummaryCard(
-          'Balance Neto',
-          totalIncome - totalExpense,
-          (totalIncome - totalExpense) >= 0
-              ? Colors.blueAccent
-              : Colors.orangeAccent,
-          Icons.account_balance_wallet_outlined,
-          isFullWidth: true,
-        ),
+        const SizedBox(height: 20),
+        ..._accounts.map((account) {
+          final stats =
+              accountStats[account.name.trim().toUpperCase()] ??
+              {'income': 0, 'expense': 0};
+          final netBalance = stats['income']! - stats['expense']!;
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E1E1E),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.white10),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: account.color.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          account.icon,
+                          color: account.color,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        account.name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        NumberFormat.currency(symbol: r'$').format(netBalance),
+                        style: TextStyle(
+                          color: netBalance >= 0 ? Colors.green : Colors.red,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Divider(color: Colors.white10, height: 24),
+                  Row(
+                    children: [
+                      _buildMiniStat(
+                        'Ingresos',
+                        stats['income']!,
+                        Colors.green,
+                      ),
+                      const SizedBox(width: 16),
+                      _buildMiniStat(
+                        'Egresos',
+                        stats['expense']!,
+                        Colors.redAccent,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
       ],
     );
   }
 
-  Widget _buildSummaryCard(
-    String title,
-    double amount,
-    Color color,
-    IconData icon, {
-    bool isFullWidth = false,
-  }) {
-    final content = Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white10),
-      ),
-      child: Row(
+  Widget _buildMiniStat(String label, double amount, Color color) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color, size: 20),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(color: Colors.grey[400], fontSize: 13),
-                ),
-                const SizedBox(height: 4),
-                FittedBox(
-                  child: Text(
-                    NumberFormat.currency(symbol: r'$').format(amount),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
+          Text(label, style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+          const SizedBox(height: 2),
+          Text(
+            NumberFormat.currency(symbol: r'$').format(amount),
+            style: TextStyle(
+              color: color.withOpacity(0.9),
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
       ),
     );
-
-    return isFullWidth ? content : Expanded(child: content);
   }
 
   Widget _buildCategoryChart({required bool isExpense}) {
@@ -328,7 +381,9 @@ class _MetricsScreenState extends State<MetricsScreen> {
 
     return Column(
       children: sortedStats.map((stat) {
-        final progress = stat.amount / maxAmount;
+        final progress = (maxAmount > 0)
+            ? (stat.amount / maxAmount).clamp(0.0, 1.0)
+            : 0.0;
         return Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: Column(
