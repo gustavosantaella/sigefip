@@ -39,7 +39,7 @@ class CustomDropdown<T> extends StatelessWidget {
               icon: const Icon(Icons.arrow_drop_down, color: Colors.white70),
               style: const TextStyle(color: Colors.white),
               hint: Text(hint, style: const TextStyle(color: Colors.grey)),
-              items: items.map((T item) {
+              items: items.toSet().map((T item) {
                 return DropdownMenuItem<T>(
                   value: item,
                   child: Text(itemLabelBuilder(item)),

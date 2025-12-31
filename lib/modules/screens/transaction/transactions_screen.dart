@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:sigefip/shared/services/online/ia_service.dart';
 import 'package:sigefip/shared/models/account_model.dart';
 import 'package:sigefip/shared/models/transaction_model.dart';
 import 'package:sigefip/shared/services/offline/account_service.dart';
@@ -340,6 +344,23 @@ class _TransactionDetailSheet extends StatelessWidget {
           ),
           if (transaction.note?.isNotEmpty ?? false)
             _buildDetailRow(Icons.note, 'Nota', transaction.note!),
+          if (transaction.imagePath != null &&
+              transaction.imagePath!.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            const Text(
+              'Comprobante',
+              style: TextStyle(color: Colors.grey, fontSize: 13),
+            ),
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.file(
+                File(transaction.imagePath!),
+                fit: BoxFit.cover,
+                width: double.infinity,
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -404,6 +425,8 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _conversionRateController =
       TextEditingController();
+  File? _image;
+  bool _isLoadingAI = false;
 
   List<Category> _allCategories = [];
   List<String> _categories = [];
@@ -440,6 +463,66 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
         _selectedCategory = null;
       }
     });
+  }
+
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Galería'),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Cámara'),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (source == null) return;
+
+    final XFile? image = await picker.pickImage(source: source);
+
+    if (image != null) {
+      setState(() {
+        _image = File(image.path);
+        _isLoadingAI = true;
+      });
+
+      try {
+        final result = await IaService.processFile(_image!);
+        setState(() {
+          if (result.containsKey('amount')) {
+            _amountController.text = result['amount'].toString();
+          }
+          if (result.containsKey('title')) {
+            _titleController.text = result['title'].toString();
+          }
+          if (result.containsKey('concept')) {
+            _noteController.text = result['concept'].toString();
+          }
+        });
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error procesando imagen: $e')),
+          );
+        }
+      } finally {
+        setState(() {
+          _isLoadingAI = false;
+        });
+      }
+    }
   }
 
   @override
@@ -551,6 +634,51 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
               label: 'Tasa de Conversión',
               keyboardType: TextInputType.number,
             ),
+            const SizedBox(height: 16),
+            const Text(
+              'Foto del Comprobante',
+              style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            GestureDetector(
+              onTap: _pickImage,
+              child: Container(
+                height: 150,
+                decoration: BoxDecoration(
+                  color: Colors.grey[900],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey[800]!),
+                ),
+                child: _isLoadingAI
+                    ? const Center(child: CircularProgressIndicator())
+                    : _image != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.file(
+                          _image!,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                      )
+                    : const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_a_photo,
+                              color: Colors.grey,
+                              size: 40,
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Agregar Foto',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      ),
+              ),
+            ),
           ],
 
           const SizedBox(height: 30),
@@ -582,6 +710,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                   color: selectedCategoryObj.color,
                   conversionRate:
                       double.tryParse(_conversionRateController.text) ?? 1.0,
+                  imagePath: _image?.path,
                 ),
               );
               widget.loadTransactions();

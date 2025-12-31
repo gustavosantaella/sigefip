@@ -12,6 +12,7 @@ class Transaction {
   Color color = Colors.white;
   double conversionRate;
   final String? note;
+  final String? imagePath;
 
   Transaction({
     this.id,
@@ -25,6 +26,7 @@ class Transaction {
     this.color = Colors.white,
     this.conversionRate = 0,
     this.note,
+    this.imagePath,
   }) : date = date ?? DateTime.now();
 
   Map<String, dynamic> toMap() {
@@ -40,6 +42,7 @@ class Transaction {
       'color': color.value,
       'conversionRate': conversionRate,
       'note': note,
+      'imagePath': imagePath,
     };
   }
 
@@ -55,9 +58,10 @@ class Transaction {
       icon: map['icon'] != null
           ? IconData(map['icon'] as int, fontFamily: 'MaterialIcons')
           : null,
-      color: Color(map['color']),
-      conversionRate: (map['conversionRate'] as num).toDouble(),
+      color: Color(map['color'] ?? Colors.white.value),
+      conversionRate: (map['conversionRate'] as num?)?.toDouble() ?? 0,
       note: map['note'],
+      imagePath: map['imagePath'],
     );
   }
 }
