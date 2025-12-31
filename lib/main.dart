@@ -8,7 +8,11 @@ import 'package:sigefip/modules/screens/home/home_screen.dart';
 import 'package:sigefip/core/constants/theme.dart' as constants;
 import 'package:sigefip/modules/screens/transaction/transactions_screen.dart';
 
-void main() {
+import 'package:intl/date_symbol_data_local.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('es_ES', null);
   runApp(const MyApp());
 }
 

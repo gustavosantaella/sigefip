@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sigefip/shared/models/transaction_model.dart';
 import 'package:sigefip/shared/services/offline/transaction_service.dart';
 import 'package:sigefip/shared/services/data_sync_notifier.dart';
@@ -15,6 +16,7 @@ class CalendarScreen extends StatefulWidget {
 
 class _CalendarScreenState extends State<CalendarScreen> {
   DateTime _selectedDate = DateTime.now();
+  DateTime _viewDate = DateTime.now();
   List<Transaction> _allTransactions = [];
   bool _isLoading = true;
 
@@ -49,6 +51,25 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }).toList();
   }
 
+  // Returns types of transactions for a day (income, expense)
+  Map<String, bool> _getDayActivity(DateTime date) {
+    bool hasIncome = false;
+    bool hasExpense = false;
+    for (var t in _allTransactions) {
+      if (t.date.year == date.year &&
+          t.date.month == date.month &&
+          t.date.day == date.day) {
+        if (t.isExpense) {
+          hasExpense = true;
+        } else {
+          hasIncome = true;
+        }
+      }
+      if (hasIncome && hasExpense) break;
+    }
+    return {'income': hasIncome, 'expense': hasExpense};
+  }
+
   double get _dayIncome => _filteredTransactions
       .where((t) => !t.isExpense)
       .fold(0, (sum, t) => sum + t.amount);
@@ -57,24 +78,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
       .where((t) => t.isExpense)
       .fold(0, (sum, t) => sum + t.amount);
 
-  double get _monthIncome => _allTransactions
-      .where((t) {
-        return t.date.year == _selectedDate.year &&
-            t.date.month == _selectedDate.month &&
-            !t.isExpense;
-      })
-      .fold(0, (sum, t) => sum + t.amount);
-
-  double get _monthExpense => _allTransactions
-      .where((t) {
-        return t.date.year == _selectedDate.year &&
-            t.date.month == _selectedDate.month &&
-            t.isExpense;
-      })
-      .fold(0, (sum, t) => sum + t.amount);
-
   @override
   Widget build(BuildContext context) {
+    final String monthName = DateFormat('MMMM yyyy', 'es').format(_viewDate);
+    final int daysInMonth = DateTime(
+      _viewDate.year,
+      _viewDate.month + 1,
+      0,
+    ).day;
+    final int firstWeekday = DateTime(
+      _viewDate.year,
+      _viewDate.month,
+      1,
+    ).weekday;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -102,7 +119,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF6C63FF).withOpacity(0.2),
+                      color: const Color(0xFF6C63FF).withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -119,31 +136,169 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
             const SizedBox(height: 10),
 
-            // Calendar View
+            // Custom Calendar View
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: const Color(0xFF1E1E1E),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Colors.white10),
               ),
-              child: Theme(
-                data: ThemeData.dark().copyWith(
-                  colorScheme: const ColorScheme.dark(
-                    primary: Color(0xFF6C63FF),
-                    onPrimary: Colors.white,
-                    surface: Color(0xFF1E1E1E),
-                    onSurface: Colors.white,
+              child: Column(
+                children: [
+                  // Month Navigation
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.chevron_left,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _viewDate = DateTime(
+                              _viewDate.year,
+                              _viewDate.month - 1,
+                            );
+                          });
+                        },
+                      ),
+                      Text(
+                        monthName[0].toUpperCase() + monthName.substring(1),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.chevron_right,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _viewDate = DateTime(
+                              _viewDate.year,
+                              _viewDate.month + 1,
+                            );
+                          });
+                        },
+                      ),
+                    ],
                   ),
-                ),
-                child: CalendarDatePicker(
-                  initialDate: _selectedDate,
-                  firstDate: DateTime(2020),
-                  lastDate: DateTime(2030),
-                  onDateChanged: (date) {
-                    setState(() => _selectedDate = date);
-                  },
-                ),
+                  const SizedBox(height: 16),
+                  // Days Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
+                        .map(
+                          (day) => Expanded(
+                            child: Center(
+                              child: Text(
+                                day,
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  const SizedBox(height: 8),
+                  // Calendar Grid
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 7,
+                          mainAxisSpacing: 8,
+                          crossAxisSpacing: 8,
+                        ),
+                    itemCount: (daysInMonth + (firstWeekday - 1)),
+                    itemBuilder: (context, index) {
+                      if (index < (firstWeekday - 1)) {
+                        return const SizedBox.shrink();
+                      }
+                      final int day = index - (firstWeekday - 1) + 1;
+                      final DateTime date = DateTime(
+                        _viewDate.year,
+                        _viewDate.month,
+                        day,
+                      );
+                      final bool isSelected =
+                          date.year == _selectedDate.year &&
+                          date.month == _selectedDate.month &&
+                          date.day == _selectedDate.day;
+                      final activity = _getDayActivity(date);
+
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedDate = date;
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? const Color(0xFF6C63FF)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '$day',
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.white70,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if (activity['income']!)
+                                    Container(
+                                      width: 4,
+                                      height: 4,
+                                      decoration: const BoxDecoration(
+                                        color: Colors.green,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  if (activity['income']! &&
+                                      activity['expense']!)
+                                    const SizedBox(width: 2),
+                                  if (activity['expense']!)
+                                    Container(
+                                      width: 4,
+                                      height: 4,
+                                      decoration: const BoxDecoration(
+                                        color: Colors.red,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
 
