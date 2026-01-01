@@ -40,7 +40,7 @@ android {
 
     defaultConfig {
         applicationId = "com.softlink.nexo_finance"
-        minSdk = 21 // Recomendado para compatibilidad profesional
+        minSdk = flutter.minSdkVersion // Recomendado para compatibilidad profesional
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
