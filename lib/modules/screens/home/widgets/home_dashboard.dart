@@ -128,31 +128,6 @@ class _HomeDashboardState extends State<HomeDashboard> {
               ),
             ),
           const SizedBox(height: 40),
-          Center(
-            child: TextButton.icon(
-              onPressed: () async {
-                await StorageService.instance.deleteAll();
-                dataSyncNotifier.notifyAccountChange();
-                dataSyncNotifier.notifyTransactionChange();
-                dataSyncNotifier.notifyCategoryChange();
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Aplicación restablecida')),
-                  );
-                }
-              },
-              icon: const Icon(
-                Icons.refresh,
-                color: Colors.redAccent,
-                size: 16,
-              ),
-              label: const Text(
-                'DEBUG: Restablecer App',
-                style: TextStyle(color: Colors.redAccent, fontSize: 12),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
         ],
       ),
     );
