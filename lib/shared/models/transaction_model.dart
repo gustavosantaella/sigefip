@@ -24,7 +24,7 @@ class Transaction {
     required this.isExpense,
     this.icon,
     this.color = Colors.white,
-    this.conversionRate = 0,
+    this.conversionRate = 1.0,
     this.note,
     this.imagePath,
   }) : date = date ?? DateTime.now();
@@ -59,7 +59,7 @@ class Transaction {
           ? IconData(map['icon'] as int, fontFamily: 'MaterialIcons')
           : null,
       color: Color(map['color'] ?? Colors.white.value),
-      conversionRate: (map['conversionRate'] as num?)?.toDouble() ?? 0,
+      conversionRate: (map['conversionRate'] as num?)?.toDouble() ?? 1.0,
       note: map['note'],
       imagePath: map['imagePath'],
     );

@@ -43,23 +43,32 @@ class _MetricsScreenState extends State<MetricsScreen> {
 
   void _applyFilter() {
     final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
     setState(() {
       _filteredTransactions = _allTransactions.where((t) {
+        final tDate = DateTime(t.date.year, t.date.month, t.date.day);
         if (_selectedPeriod == 'Semanal') {
-          return t.date.isAfter(now.subtract(const Duration(days: 7)));
+          final weekAgo = today.subtract(const Duration(days: 7));
+          return tDate.isAfter(weekAgo.subtract(const Duration(seconds: 1)));
         } else if (_selectedPeriod == 'Mensual') {
           return t.date.month == now.month && t.date.year == now.year;
         } else if (_selectedPeriod == "Diario") {
-          return t.date.day == now.day &&
-              t.date.month == now.month &&
-              t.date.year == now.year;
+          return tDate.isAtSameMomentAs(today);
         } else if (_selectedPeriod == 'Anual') {
           return t.date.year == now.year;
         } else if (_selectedPeriod == 'Intervalo' && _customRange != null) {
-          return t.date.isAfter(
-                _customRange!.start.subtract(const Duration(seconds: 1)),
-              ) &&
-              t.date.isBefore(_customRange!.end.add(const Duration(days: 1)));
+          final start = DateTime(
+            _customRange!.start.year,
+            _customRange!.start.month,
+            _customRange!.start.day,
+          );
+          final end = DateTime(
+            _customRange!.end.year,
+            _customRange!.end.month,
+            _customRange!.end.day,
+          );
+          return tDate.isAfter(start.subtract(const Duration(seconds: 1))) &&
+              tDate.isBefore(end.add(const Duration(days: 1)));
         }
         return false;
       }).toList();
@@ -212,14 +221,14 @@ class _MetricsScreenState extends State<MetricsScreen> {
     for (var t in _filteredTransactions) {
       final accountKey = t.account.trim().toUpperCase();
       accountStats.putIfAbsent(accountKey, () => {'income': 0, 'expense': 0});
+      final rate = t.conversionRate > 0 ? t.conversionRate : 1.0;
+      final amount = t.amount * rate;
       if (t.isExpense) {
         accountStats[accountKey]!['expense'] =
-            accountStats[accountKey]!['expense']! +
-            (t.amount * t.conversionRate);
+            accountStats[accountKey]!['expense']! + amount;
       } else {
         accountStats[accountKey]!['income'] =
-            accountStats[accountKey]!['income']! +
-            (t.amount * t.conversionRate);
+            accountStats[accountKey]!['income']! + amount;
       }
     }
 
@@ -353,14 +362,13 @@ class _MetricsScreenState extends State<MetricsScreen> {
     for (var t in _filteredTransactions.where(
       (t) => t.isExpense == isExpense,
     )) {
+      final rate = t.conversionRate > 0 ? t.conversionRate : 1.0;
+      final amount = t.amount * rate;
       stats.update(
         t.category,
-        (val) => val..amount += (t.amount * t.conversionRate),
-        ifAbsent: () => _CategoryStat(
-          name: t.category,
-          amount: t.amount * t.conversionRate,
-          color: t.color,
-        ),
+        (val) => val..amount += amount,
+        ifAbsent: () =>
+            _CategoryStat(name: t.category, amount: amount, color: t.color),
       );
     }
 

@@ -24,14 +24,14 @@ class QuickActionsSection extends StatelessWidget {
           },
         ),
         const SizedBox(width: 24),
-        _QuickAction(
-          icon: Icons.pie_chart_outline,
-          label: 'Presupuesto',
-          onTap: () {
-            Navigator.pushNamed(context, '/budget');
-          },
-        ),
-        const SizedBox(width: 24),
+        // _QuickAction(
+        //   icon: Icons.pie_chart_outline,
+        //   label: 'Presupuesto',
+        //   onTap: () {
+        //     Navigator.pushNamed(context, '/budget');
+        //   },
+        // ),
+        // const SizedBox(width: 24),
         _QuickAction(
           icon: Icons.analytics_outlined,
           label: 'Métricas',

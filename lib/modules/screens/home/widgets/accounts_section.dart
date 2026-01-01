@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../shared/models/account_model.dart';
 import '../../../../shared/services/offline/account_service.dart';
-import '../../../../shared/services/data_sync_notifier.dart';
+import '../../../../shared/notifiers/data_sync_notifier.dart';
 import '../../accounts/accounts_screen.dart';
 
 class AccountsSection extends StatefulWidget {

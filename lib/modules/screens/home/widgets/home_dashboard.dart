@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sigefip/shared/models/transaction_model.dart';
 import 'package:sigefip/shared/services/offline/transaction_service.dart';
-import 'package:sigefip/shared/services/data_sync_notifier.dart';
-import 'package:sigefip/shared/services/storage_service.dart';
+import 'package:sigefip/shared/notifiers/data_sync_notifier.dart';
+import 'package:sigefip/shared/services/offline/storage_service.dart';
 import 'accounts_section.dart';
 import '../../../../shared/widgets/transactions.dart';
 import 'quick_actions.dart';
