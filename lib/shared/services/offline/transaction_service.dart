@@ -1,9 +1,9 @@
-import 'package:sigefip/shared/models/category_model.dart';
-import 'package:sigefip/shared/models/transaction_model.dart';
-import 'package:sigefip/shared/services/offline/category_service.dart';
-import 'package:sigefip/shared/services/offline/storage_service.dart';
-import 'package:sigefip/shared/notifiers/data_sync_notifier.dart';
-import 'package:sigefip/shared/services/offline/account_service.dart';
+import 'package:nexo_finance/shared/models/category_model.dart';
+import 'package:nexo_finance/shared/models/transaction_model.dart';
+import 'package:nexo_finance/shared/services/offline/category_service.dart';
+import 'package:nexo_finance/shared/services/offline/storage_service.dart';
+import 'package:nexo_finance/shared/notifiers/data_sync_notifier.dart';
+import 'package:nexo_finance/shared/services/offline/account_service.dart';
 
 class TransactionService {
   static final StorageService storageService = StorageService.instance;

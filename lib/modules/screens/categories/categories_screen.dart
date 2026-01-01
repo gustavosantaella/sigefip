@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sigefip/shared/models/category_model.dart';
-import 'package:sigefip/shared/services/offline/category_service.dart';
+import 'package:nexo_finance/shared/models/category_model.dart';
+import 'package:nexo_finance/shared/services/offline/category_service.dart';
 import '../../../shared/notifiers/data_sync_notifier.dart';
 import '../../../../shared/widgets/custom_back_button.dart';
 import '../../../../shared/widgets/custom_bottom_sheet.dart';

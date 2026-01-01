@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:sigefip/modules/screens/accounts/accounts_screen.dart';
-import 'package:sigefip/modules/screens/budget/budget_screen.dart';
-import 'package:sigefip/modules/screens/calendar/calendar_screen.dart';
-import 'package:sigefip/modules/screens/categories/categories_screen.dart';
-import 'package:sigefip/modules/screens/metrics/metrics_screen.dart';
-import 'package:sigefip/modules/screens/home/home_screen.dart';
-import 'package:sigefip/modules/screens/new_user/onboarding_screen.dart';
-import 'package:sigefip/core/constants/theme.dart' as constants;
-import 'package:sigefip/modules/screens/transaction/transactions_screen.dart';
-import 'package:sigefip/shared/services/offline/storage_service.dart';
+import 'package:nexo_finance/modules/screens/accounts/accounts_screen.dart';
+import 'package:nexo_finance/modules/screens/budget/budget_screen.dart';
+import 'package:nexo_finance/modules/screens/calendar/calendar_screen.dart';
+import 'package:nexo_finance/modules/screens/categories/categories_screen.dart';
+import 'package:nexo_finance/modules/screens/metrics/metrics_screen.dart';
+import 'package:nexo_finance/modules/screens/home/home_screen.dart';
+import 'package:nexo_finance/modules/screens/new_user/onboarding_screen.dart';
+import 'package:nexo_finance/core/constants/theme.dart' as constants;
+import 'package:nexo_finance/modules/screens/transaction/transactions_screen.dart';
+import 'package:nexo_finance/shared/services/offline/storage_service.dart';
 
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'SIGEFIP',
+      title: 'Nexo Finance',
       theme: constants.Theme.getTheme(),
       initialRoute: showOnboarding ? '/onboarding' : '/',
       routes: {

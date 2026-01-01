@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sigefip/shared/services/offline/account_service.dart';
+import 'package:nexo_finance/shared/services/offline/account_service.dart';
 import '../../../shared/models/account_model.dart';
 import '../../../shared/widgets/custom_bottom_sheet.dart';
 import '../../../shared/widgets/custom_button.dart';
@@ -138,6 +138,14 @@ class _AccountsScreenState extends State<AccountsScreen> {
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
+                                if (account.currency != null)
+                                  Text(
+                                    account.currency!,
+                                    style: TextStyle(
+                                      color: Colors.grey[400],
+                                      fontSize: 12,
+                                    ),
+                                  ),
                               ],
                             ),
                           ),

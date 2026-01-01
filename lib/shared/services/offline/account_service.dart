@@ -1,8 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:sigefip/shared/notifiers/data_sync_notifier.dart';
-import 'package:sigefip/shared/models/account_model.dart';
-import 'package:sigefip/shared/services/offline/storage_service.dart';
+import 'package:nexo_finance/shared/notifiers/data_sync_notifier.dart';
+import 'package:nexo_finance/shared/models/account_model.dart';
+import 'package:nexo_finance/shared/services/offline/storage_service.dart';
 
 class AccountService {
   static final StorageService _storageService = StorageService.instance;
@@ -63,11 +62,8 @@ class AccountService {
         debugPrint('New Balance: ${account.balance}');
         debugPrint('-------------------------------------------');
 
-        // Save the whole updated array
-        await _storageService.write(
-          _key,
-          json.encode(accounts.map((a) => a.toMap()).toList()),
-        );
+        // Update only this account in the database
+        await _storageService.updateItem(_key, account.toMap());
         dataSyncNotifier.notifyAccountChange();
       }
     } catch (e) {

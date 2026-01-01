@@ -1,4 +1,4 @@
-# sigefip
+# nexo_finance
 
 A new Flutter project.
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sigefip/shared/models/base_model.dart';
+import 'package:nexo_finance/shared/models/base_model.dart';
 
 class Account {
   String? id;

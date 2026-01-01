@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sigefip/shared/services/offline/storage_service.dart';
+import 'package:nexo_finance/shared/services/offline/storage_service.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -14,7 +14,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<OnboardingData> _pages = [
     OnboardingData(
-      title: '¡Bienvenido a SIGEFIP!',
+      title: '¡Bienvenido a Nexo Finance!',
       description:
           'Tu compañero ideal para el control total de tus finanzas personales.',
       icon: Icons.account_balance_wallet_rounded,

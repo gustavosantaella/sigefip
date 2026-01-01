@@ -1,4 +1,4 @@
-Analyzing sigefip...                                            
+Analyzing nexo_finance...                                            
 
 warning - Unused import: '../screens/budget/budget_screen.dart' - lib\modules\router\routes.dart:5:8 - unused_import
    info - Unnecessary use of multiple underscores - lib\modules\screens\accounts\accounts_screen.dart:76:39 - unnecessary_underscores
@@ -28,7 +28,7 @@ warning - The declaration '_buildSummaryCard' isn't referenced - lib\modules\scr
    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\modules\screens\metrics\metrics_screen.dart:514:30 - deprecated_member_use
    info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\modules\screens\transaction\transactions_screen.dart:211:41 - use_build_context_synchronously
    info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\modules\screens\transaction\transactions_screen.dart:700:42 - use_build_context_synchronously
-warning - Unused import: 'package:sigefip/shared/models/base_model.dart' - lib\shared\models\account_model.dart:2:8 - unused_import
+warning - Unused import: 'package:nexo_finance/shared/models/base_model.dart' - lib\shared\models\account_model.dart:2:8 - unused_import
    info - 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion - lib\shared\models\account_model.dart:30:22 - deprecated_member_use
    info - 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion - lib\shared\models\category_model.dart:25:22 - deprecated_member_use
    info - 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion - lib\shared\models\transaction_model.dart:42:22 - deprecated_member_use

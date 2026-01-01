@@ -1,8 +1,8 @@
-import 'package:sigefip/shared/models/category_model.dart';
-import 'package:sigefip/shared/services/offline/storage_service.dart';
-import 'package:sigefip/core/constants/categories.dart';
+import 'package:nexo_finance/shared/models/category_model.dart';
+import 'package:nexo_finance/shared/services/offline/storage_service.dart';
+import 'package:nexo_finance/core/constants/categories.dart';
 import 'package:flutter/material.dart';
-import 'package:sigefip/shared/notifiers/data_sync_notifier.dart';
+import 'package:nexo_finance/shared/notifiers/data_sync_notifier.dart';
 
 class CategoryService {
   static final StorageService storageService = StorageService.instance;

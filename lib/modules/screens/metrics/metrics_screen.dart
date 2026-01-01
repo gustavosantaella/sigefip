@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sigefip/shared/models/transaction_model.dart';
-import 'package:sigefip/shared/services/offline/transaction_service.dart';
-import 'package:sigefip/shared/services/offline/account_service.dart';
-import 'package:sigefip/shared/models/account_model.dart';
+import 'package:nexo_finance/shared/models/transaction_model.dart';
+import 'package:nexo_finance/shared/services/offline/transaction_service.dart';
+import 'package:nexo_finance/shared/services/offline/account_service.dart';
+import 'package:nexo_finance/shared/models/account_model.dart';
 import '../../../shared/widgets/custom_back_button.dart';
 import '../../../shared/widgets/type_chip.dart';
 
