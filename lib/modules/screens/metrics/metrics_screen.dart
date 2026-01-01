@@ -6,6 +6,7 @@ import 'package:nexo_finance/shared/services/offline/account_service.dart';
 import 'package:nexo_finance/shared/models/account_model.dart';
 import '../../../shared/widgets/custom_back_button.dart';
 import '../../../shared/widgets/type_chip.dart';
+import 'widgets/category_pie_chart.dart';
 
 class MetricsScreen extends StatefulWidget {
   const MetricsScreen({super.key});
@@ -357,18 +358,27 @@ class _MetricsScreenState extends State<MetricsScreen> {
   }
 
   Widget _buildCategoryChart({required bool isExpense}) {
-    final Map<String, _CategoryStat> stats = {};
+    // 1. Group transactions by category
+    final Map<String, CategoryChartData> stats = {};
 
     for (var t in _filteredTransactions.where(
       (t) => t.isExpense == isExpense,
     )) {
       final rate = t.conversionRate > 0 ? t.conversionRate : 1.0;
       final amount = t.amount * rate;
+
+      // Handle the case where category might not be standardized
+      final catName = t.category.trim();
+
       stats.update(
-        t.category,
-        (val) => val..amount += amount,
+        catName,
+        (val) => CategoryChartData(
+          name: val.name,
+          amount: val.amount + amount,
+          color: val.color,
+        ), // Keep existing color
         ifAbsent: () =>
-            _CategoryStat(name: t.category, amount: amount, color: t.color),
+            CategoryChartData(name: catName, amount: amount, color: t.color),
       );
     }
 
@@ -383,71 +393,11 @@ class _MetricsScreenState extends State<MetricsScreen> {
       );
     }
 
+    // 2. Convert to list and sort by amount descending
     final sortedStats = stats.values.toList()
       ..sort((a, b) => b.amount.compareTo(a.amount));
-    final maxAmount = sortedStats.first.amount;
 
-    return Column(
-      children: sortedStats.map((stat) {
-        final progress = (maxAmount > 0)
-            ? (stat.amount / maxAmount).clamp(0.0, 1.0)
-            : 0.0;
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    stat.name,
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
-                  ),
-                  Text(
-                    NumberFormat.currency(symbol: r'$').format(stat.amount),
-                    style: TextStyle(
-                      color: stat.color,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Stack(
-                children: [
-                  Container(
-                    height: 8,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                  FractionallySizedBox(
-                    widthFactor: progress,
-                    child: Container(
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: stat.color,
-                        borderRadius: BorderRadius.circular(4),
-                        boxShadow: [
-                          BoxShadow(
-                            color: stat.color.withOpacity(0.3),
-                            blurRadius: 4,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      }).toList(),
-    );
+    return CategoryPieChart(data: sortedStats, isExpense: isExpense);
   }
 
   Widget _buildAccountUsageSection() {
@@ -551,16 +501,4 @@ class _MetricsScreenState extends State<MetricsScreen> {
       ),
     );
   }
-}
-
-class _CategoryStat {
-  final String name;
-  double amount;
-  final Color color;
-
-  _CategoryStat({
-    required this.name,
-    required this.amount,
-    required this.color,
-  });
 }
