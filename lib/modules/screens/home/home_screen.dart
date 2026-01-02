@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/nav_item.dart';
+
 import '../../router/routes.dart';
+import 'package:nexo_finance/shared/services/notification_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,6 +13,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await NotificationService.requestPermissions();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

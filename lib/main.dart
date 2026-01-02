@@ -18,16 +18,21 @@ import 'package:nexo_finance/modules/screens/settings/settings_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await NotificationService.initialize();
-  await initializeDateFormatting('es_ES', null);
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    await initializeDateFormatting('es_ES', null);
+    await NotificationService.initialize();
 
-  final String? onboardingCompleted = await StorageService.instance.read(
-    'onboarding_completed',
-  );
-  final bool showOnboarding = onboardingCompleted != 'true';
-
-  runApp(MyApp(showOnboarding: showOnboarding));
+    final String? onboardingCompleted = await StorageService.instance.read(
+      'onboarding_completed',
+    );
+    final bool showOnboarding = onboardingCompleted != 'true';
+    runApp(MyApp(showOnboarding: showOnboarding));
+  } catch (e) {
+    debugPrint('Error during initialization: $e');
+    // Fallback in case of storage failure, assuming onboarding is needed or safe default
+    runApp(const MyApp(showOnboarding: false));
+  }
 }
 
 class MyApp extends StatelessWidget {

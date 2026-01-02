@@ -11,19 +11,21 @@ class NotificationService {
     const InitializationSettings initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
 
-    // Request permissions for Android 13+
-    await _notificationsPlugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.requestNotificationsPermission();
-
     await _notificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (details) {
         // Handle notification tap
       },
     );
+  }
+
+  static Future<void> requestPermissions() async {
+    // Request permissions for Android 13+
+    await _notificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
+        ?.requestNotificationsPermission();
   }
 
   static Future<void> showNotification({
@@ -44,6 +46,16 @@ class NotificationService {
       android: androidPlatformChannelSpecifics,
     );
 
-    await _notificationsPlugin.show(id, title, body, platformChannelSpecifics);
+    try {
+      await _notificationsPlugin.show(
+        id,
+        title,
+        body,
+        platformChannelSpecifics,
+      );
+    } catch (e) {
+      // Ignore if notification fails (e.g. permission denied)
+      // debugPrint('Notification failed: $e');
+    }
   }
 }
