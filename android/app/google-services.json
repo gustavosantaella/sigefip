@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "639172241968",
+    "project_id": "nexo-finance",
+    "storage_bucket": "nexo-finance.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:639172241968:android:3b9920d608a21530c9dbf5",
+        "android_client_info": {
+          "package_name": "com.softlink.nexo_finance"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7n7mumBRQ-K14SLkGDt6YjRjyq_fIeSk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
