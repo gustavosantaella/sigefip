@@ -252,7 +252,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ProfileMenuItem(
                 icon: Icons.person_outline,
                 title: 'Información Personal',
-                subtitle: _user?.name ?? 'Juan Pérez',
+                subtitle: _user?.name ?? 'Username',
                 onTap: () => Navigator.pushNamed(context, '/personal-info'),
               ),
               const SizedBox(height: 12),

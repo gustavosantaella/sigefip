@@ -17,6 +17,8 @@ import '../../../shared/widgets/custom_dropdown.dart';
 import '../../../shared/widgets/custom_button.dart';
 import '../../../shared/widgets/custom_text_field.dart';
 import '../../../shared/widgets/type_chip.dart';
+import '../../../shared/widgets/banner_ad_widget.dart';
+import '../../../shared/helpers/ad_helper.dart';
 
 class TransactionsScreen extends StatefulWidget {
   const TransactionsScreen({super.key});
@@ -150,6 +152,16 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     ),
                     const SizedBox(height: 20),
 
+                    const SizedBox(height: 20),
+
+                    // Banner Ad 1
+                    Center(
+                      child: BannerAdWidget(
+                        adUnitId: AdHelper.transactionsBanner1,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
                     // Filters
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -248,6 +260,12 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 10),
+            // Banner Ad 2
+            Center(
+              child: BannerAdWidget(adUnitId: AdHelper.transactionsBanner2),
+            ),
+            const SizedBox(height: 10),
           ],
         ),
       ),

@@ -14,6 +14,7 @@ import 'package:nexo_finance/shared/services/notification_service.dart';
 import 'package:nexo_finance/modules/screens/profile/profile_screen.dart';
 import 'package:nexo_finance/modules/screens/profile/personal_info_screen.dart';
 import 'package:nexo_finance/modules/screens/settings/settings_screen.dart';
+import 'package:nexo_finance/shared/services/ad_service.dart';
 
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -23,11 +24,20 @@ void main() async {
     await initializeDateFormatting('es_ES', null);
     await NotificationService.initialize();
 
+    final adService = AdService();
+    await adService.initialize();
+
     final String? onboardingCompleted = await StorageService.instance.read(
       'onboarding_completed',
     );
     final bool showOnboarding = onboardingCompleted != 'true';
-    runApp(MyApp(showOnboarding: showOnboarding));
+
+    runApp(
+      AppLifecycleObserver(
+        adService: adService,
+        child: MyApp(showOnboarding: showOnboarding),
+      ),
+    );
   } catch (e) {
     debugPrint('Error during initialization: $e');
     // Fallback in case of storage failure, assuming onboarding is needed or safe default
@@ -61,5 +71,41 @@ class MyApp extends StatelessWidget {
         '/settings': (context) => const SettingsScreen(),
       },
     );
+  }
+}
+
+class AppLifecycleObserver extends StatefulWidget {
+  final Widget child;
+  final AdService adService;
+
+  const AppLifecycleObserver({
+    super.key,
+    required this.child,
+    required this.adService,
+  });
+
+  @override
+  State<AppLifecycleObserver> createState() => _AppLifecycleObserverState();
+}
+
+class _AppLifecycleObserverState extends State<AppLifecycleObserver> {
+  late AppLifecycleReactor _reactor;
+
+  @override
+  void initState() {
+    super.initState();
+    _reactor = AppLifecycleReactor(widget.adService);
+    WidgetsBinding.instance.addObserver(_reactor);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(_reactor);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
   }
 }

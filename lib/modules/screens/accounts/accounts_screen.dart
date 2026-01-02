@@ -7,6 +7,8 @@ import '../../../shared/widgets/custom_dropdown.dart';
 import '../../../shared/widgets/custom_text_field.dart';
 import '../../../../core/constants/currencies.dart';
 import '../../../../shared/widgets/slide_card.dart';
+import '../../../../shared/widgets/banner_ad_widget.dart';
+import '../../../../shared/helpers/ad_helper.dart';
 
 class AccountsScreen extends StatefulWidget {
   const AccountsScreen({super.key});
@@ -65,6 +67,14 @@ class _AccountsScreenState extends State<AccountsScreen> {
                 ],
               ),
             ),
+            // Banner Ad 1 (Accounts)
+            Center(child: BannerAdWidget(adUnitId: AdHelper.accountsBanner1)),
+            const SizedBox(height: 10),
+            // Banner Ad 2 (Accounts)
+            const SizedBox(height: 10),
+            Center(child: BannerAdWidget(adUnitId: AdHelper.accountsBanner2)),
+            const SizedBox(height: 10),
+
             // Accounts Grid/List
             Expanded(
               child: ListView.separated(

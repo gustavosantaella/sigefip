@@ -5,6 +5,8 @@ import 'package:nexo_finance/shared/notifiers/data_sync_notifier.dart';
 import 'accounts_section.dart';
 import '../../../../shared/widgets/transactions.dart';
 import 'quick_actions.dart';
+import '../../../../shared/widgets/banner_ad_widget.dart';
+import '../../../../shared/helpers/ad_helper.dart';
 
 class HomeDashboard extends StatefulWidget {
   const HomeDashboard({super.key});
@@ -81,6 +83,10 @@ class _HomeDashboardState extends State<HomeDashboard> {
           ),
           const SizedBox(height: 30),
 
+          // Top Banner Ad
+          Center(child: BannerAdWidget(adUnitId: AdHelper.homeTopBanner)),
+          const SizedBox(height: 20),
+
           // Accounts Section
           const AccountsSection(),
           const SizedBox(height: 30),
@@ -130,6 +136,10 @@ class _HomeDashboardState extends State<HomeDashboard> {
               ),
             ),
           const SizedBox(height: 40),
+
+          // Bottom Banner Ad
+          Center(child: BannerAdWidget(adUnitId: AdHelper.homeBottomBanner)),
+          const SizedBox(height: 20),
         ],
       ),
     );
