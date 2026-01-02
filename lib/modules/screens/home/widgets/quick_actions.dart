@@ -5,41 +5,52 @@ class QuickActionsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        _QuickAction(
-          icon: Icons.calendar_today_outlined,
-          label: 'Calendario',
-          onTap: () {
-            Navigator.pushNamed(context, '/calendar');
-          },
-        ),
-        const SizedBox(width: 24),
-        _QuickAction(
-          icon: Icons.local_offer_outlined,
-          label: 'Categorias',
-          onTap: () {
-            Navigator.pushNamed(context, '/categories');
-          },
-        ),
-        const SizedBox(width: 24),
-        _QuickAction(
-          icon: Icons.pie_chart_outline,
-          label: 'Presupuesto',
-          onTap: () {
-            Navigator.pushNamed(context, '/budget');
-          },
-        ),
-        const SizedBox(width: 24),
-        _QuickAction(
-          icon: Icons.analytics_outlined,
-          label: 'Métricas',
-          onTap: () {
-            Navigator.pushNamed(context, '/metrics');
-          },
-        ),
-      ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          _QuickAction(
+            icon: Icons.calendar_today_outlined,
+            label: 'Calendario',
+            onTap: () {
+              Navigator.pushNamed(context, '/calendar');
+            },
+          ),
+          const SizedBox(width: 24),
+          _QuickAction(
+            icon: Icons.local_offer_outlined,
+            label: 'Categorias',
+            onTap: () {
+              Navigator.pushNamed(context, '/categories');
+            },
+          ),
+          const SizedBox(width: 24),
+          _QuickAction(
+            icon: Icons.pie_chart_outline,
+            label: 'Presupuesto',
+            onTap: () {
+              Navigator.pushNamed(context, '/budget');
+            },
+          ),
+          const SizedBox(width: 24),
+          _QuickAction(
+            icon: Icons.analytics_outlined,
+            label: 'Métricas',
+            onTap: () {
+              Navigator.pushNamed(context, '/metrics');
+            },
+          ),
+          const SizedBox(width: 24),
+          _QuickAction(
+            icon: Icons.notifications_outlined,
+            label: 'Alertas',
+            onTap: () {
+              Navigator.pushNamed(context, '/alerts');
+            },
+          ),
+        ],
+      ),
     );
   }
 }

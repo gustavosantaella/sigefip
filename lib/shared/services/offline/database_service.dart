@@ -17,7 +17,7 @@ class DatabaseService {
     String path = join(await getDatabasesPath(), 'nexo_finance.db');
     return await openDatabase(
       path,
-      version: 4,
+      version: 6,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -90,6 +90,19 @@ class DatabaseService {
         executedAmount REAL DEFAULT 0.0
       )
     ''');
+
+    await db.execute('''
+      CREATE TABLE alerts (
+        id TEXT PRIMARY KEY,
+        category TEXT,
+        account TEXT,
+        maxAmount REAL,
+        period TEXT,
+        cutoffDay INTEGER,
+        icon INTEGER,
+        color INTEGER
+      )
+    ''');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -124,6 +137,27 @@ class DatabaseService {
       await db.execute(
         'ALTER TABLE budgets ADD COLUMN executedAmount REAL DEFAULT 0.0',
       );
+    }
+
+    if (oldVersion < 5) {
+      // Add alerts table for version 5
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS alerts (
+          id TEXT PRIMARY KEY,
+          category TEXT,
+          account TEXT,
+          maxAmount REAL,
+          period TEXT,
+          cutoffDay INTEGER,
+          icon INTEGER,
+          color INTEGER
+        )
+      ''');
+    }
+
+    if (oldVersion < 6) {
+      // Add account column to alerts for version 6
+      await db.execute('ALTER TABLE alerts ADD COLUMN account TEXT DEFAULT ""');
     }
   }
 }

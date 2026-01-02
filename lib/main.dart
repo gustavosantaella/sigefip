@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nexo_finance/modules/screens/accounts/accounts_screen.dart';
+import 'package:nexo_finance/modules/screens/alerts/alerts_screen.dart';
 import 'package:nexo_finance/modules/screens/budget/budget_screen.dart';
 import 'package:nexo_finance/modules/screens/calendar/calendar_screen.dart';
 import 'package:nexo_finance/modules/screens/categories/categories_screen.dart';
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         '/categories': (context) => const CategoriesScreen(),
         '/calendar': (context) => const CalendarScreen(),
         '/metrics': (context) => const MetricsScreen(),
+        '/alerts': (context) => const AlertsScreen(),
       },
     );
   }
