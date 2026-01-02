@@ -10,9 +10,11 @@ class TransactionService {
 
   static Future<void> store(Transaction transaction) async {
     transaction.id = DateTime.now().millisecondsSinceEpoch.toString();
-    Category category = await CategoryService.getByName(transaction.category);
-    transaction.icon = category.icon;
-    transaction.color = category.color;
+    Category? category = await CategoryService.getByName(transaction.category);
+    if (category != null) {
+      transaction.icon = category.icon;
+      transaction.color = category.color;
+    }
 
     await storageService.pushToArray("transactions", transaction.toMap());
 

@@ -15,7 +15,12 @@ class DatabaseService {
 
   Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), 'nexo_finance.db');
-    return await openDatabase(path, version: 1, onCreate: _onCreate);
+    return await openDatabase(
+      path,
+      version: 4,
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
+    );
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -66,5 +71,59 @@ class DatabaseService {
         imagePath TEXT
       )
     ''');
+
+    await db.execute('''
+      CREATE TABLE budgets (
+        id TEXT PRIMARY KEY,
+        title TEXT,
+        amount REAL,
+        category TEXT,
+        type TEXT,
+        concurrency TEXT,
+        cutoffDay INTEGER,
+        note TEXT,
+        icon INTEGER,
+        color INTEGER,
+        startDate TEXT,
+        endDate TEXT,
+        status TEXT DEFAULT "active",
+        executedAmount REAL DEFAULT 0.0
+      )
+    ''');
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS budgets (
+          id TEXT PRIMARY KEY,
+          title TEXT,
+          amount REAL,
+          category TEXT,
+          type TEXT,
+          concurrency TEXT,
+          cutoffDay INTEGER,
+          note TEXT,
+          icon INTEGER,
+          color INTEGER,
+          startDate TEXT,
+          endDate TEXT,
+          status TEXT DEFAULT "active",
+          executedAmount REAL DEFAULT 0.0
+        )
+      ''');
+    } else if (oldVersion == 2 && newVersion >= 3) {
+      // Only add status column if upgrading from version 2 to 3
+      await db.execute(
+        'ALTER TABLE budgets ADD COLUMN status TEXT DEFAULT "active"',
+      );
+    }
+
+    if (oldVersion < 4) {
+      // Add executedAmount column for version 4
+      await db.execute(
+        'ALTER TABLE budgets ADD COLUMN executedAmount REAL DEFAULT 0.0',
+      );
+    }
   }
 }

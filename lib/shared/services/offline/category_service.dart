@@ -52,9 +52,13 @@ class CategoryService {
     return allCategories;
   }
 
-  static Future<Category> getByName(String name) async {
+  static Future<Category?> getByName(String name) async {
     List<Category> categories = await getCategories();
-    return categories.where((category) => category.name == name).first;
+    try {
+      return categories.firstWhere((category) => category.name == name);
+    } catch (e) {
+      return null;
+    }
   }
 
   static Future<void> delete(String id) async {
