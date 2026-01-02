@@ -180,8 +180,9 @@ class _AddEditBudgetScreenState extends State<AddEditBudgetScreen> {
                             firstDate: DateTime(2020),
                             lastDate: DateTime(2030),
                           );
-                          if (picked != null)
+                          if (picked != null) {
                             setState(() => _startDate = picked);
+                          }
                         },
                         child: Text(
                           _startDate == null

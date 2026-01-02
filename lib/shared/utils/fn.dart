@@ -1,1 +1,1 @@
-fromMap(Map<String, dynamic> map) {}
+void fromMap(Map<String, dynamic> map) {}

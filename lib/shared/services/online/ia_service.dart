@@ -8,7 +8,7 @@ import '../../../core/env/main.dart';
 
 class IaService {
   static Future<HashMap<String, Object>> processFile(File file) async {
-    final url = Uri.parse("${API_URL}/gemini/generate");
+    final url = Uri.parse("$API_URL/gemini/generate");
     final request = http.MultipartRequest('POST', url);
     request.files.add(await http.MultipartFile.fromPath('file', file.path));
     final response = await request.send();

@@ -332,7 +332,7 @@ class _MetricsScreenState extends State<MetricsScreen> {
               ),
             ),
           );
-        }).toList(),
+        }),
       ],
     );
   }

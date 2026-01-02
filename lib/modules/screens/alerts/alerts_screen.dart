@@ -338,7 +338,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
 
                     // Category Dropdown
                     DropdownButtonFormField<Category>(
-                      value: selectedCategory,
+                      initialValue: selectedCategory,
                       decoration: const InputDecoration(
                         labelText: 'Categoría',
                         labelStyle: TextStyle(color: Colors.white70),
@@ -370,7 +370,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
 
                     // Account Dropdown
                     DropdownButtonFormField<Account>(
-                      value: selectedAccount,
+                      initialValue: selectedAccount,
                       decoration: const InputDecoration(
                         labelText: 'Cuenta',
                         labelStyle: TextStyle(color: Colors.white70),
@@ -420,7 +420,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
 
                     // Period
                     DropdownButtonFormField<String>(
-                      value: selectedPeriod,
+                      initialValue: selectedPeriod,
                       decoration: const InputDecoration(
                         labelText: 'Período',
                         labelStyle: TextStyle(color: Colors.white70),

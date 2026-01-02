@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:nexo_finance/shared/models/transaction_model.dart';
 import 'package:nexo_finance/shared/services/offline/transaction_service.dart';
 import 'package:nexo_finance/shared/notifiers/data_sync_notifier.dart';
-import 'package:nexo_finance/shared/services/offline/storage_service.dart';
 import 'accounts_section.dart';
 import '../../../../shared/widgets/transactions.dart';
 import 'quick_actions.dart';

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../screens/home/widgets/home_dashboard.dart';
 import '../screens/transaction/transactions_screen.dart';
 import '../screens/accounts/accounts_screen.dart';
-import '../screens/budget/budget_screen.dart';
 
 class AppRoute {
   final String title;
