@@ -62,16 +62,19 @@ class _HomeDashboardState extends State<HomeDashboard> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white24),
-                ),
-                child: const Icon(
-                  Icons.person_outline,
-                  color: Colors.white,
-                  size: 20,
+              GestureDetector(
+                onTap: () => Navigator.pushNamed(context, '/profile'),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white24),
+                  ),
+                  child: const Icon(
+                    Icons.person_outline,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
               ),
             ],

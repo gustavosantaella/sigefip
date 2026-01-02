@@ -70,4 +70,25 @@ class AccountService {
       debugPrint('Error updating account balance: $e');
     }
   }
+
+  static Future<String?> getDefaultAccountId() async {
+    return await _storageService.read('default_account_id');
+  }
+
+  static Future<void> setDefaultAccountId(String accountId) async {
+    await _storageService.write('default_account_id', accountId);
+    dataSyncNotifier.notifyAccountChange();
+  }
+
+  static Future<Account?> getDefaultAccount() async {
+    final String? defaultId = await getDefaultAccountId();
+    if (defaultId == null) return null;
+
+    final List<Account> accounts = await getAccounts();
+    try {
+      return accounts.firstWhere((account) => account.id == defaultId);
+    } catch (e) {
+      return null;
+    }
+  }
 }

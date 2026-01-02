@@ -10,6 +10,9 @@ import 'package:nexo_finance/modules/screens/new_user/onboarding_screen.dart';
 import 'package:nexo_finance/core/constants/theme.dart' as constants;
 import 'package:nexo_finance/modules/screens/transaction/transactions_screen.dart';
 import 'package:nexo_finance/shared/services/offline/storage_service.dart';
+import 'package:nexo_finance/modules/screens/profile/profile_screen.dart';
+import 'package:nexo_finance/modules/screens/profile/personal_info_screen.dart';
+import 'package:nexo_finance/modules/screens/settings/settings_screen.dart';
 
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -46,6 +49,9 @@ class MyApp extends StatelessWidget {
         '/calendar': (context) => const CalendarScreen(),
         '/metrics': (context) => const MetricsScreen(),
         '/alerts': (context) => const AlertsScreen(),
+        '/profile': (context) => const ProfileScreen(),
+        '/personal-info': (context) => const PersonalInfoScreen(),
+        '/settings': (context) => const SettingsScreen(),
       },
     );
   }
