@@ -17,7 +17,7 @@ class DatabaseService {
     String path = join(await getDatabasesPath(), 'nexo_finance.db');
     return await openDatabase(
       path,
-      version: 6,
+      version: 7,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -100,7 +100,10 @@ class DatabaseService {
         period TEXT,
         cutoffDay INTEGER,
         icon INTEGER,
-        color INTEGER
+        color INTEGER,
+        notified50 INTEGER DEFAULT 0,
+        notified80 INTEGER DEFAULT 0,
+        notified100 INTEGER DEFAULT 0
       )
     ''');
   }
@@ -158,6 +161,19 @@ class DatabaseService {
     if (oldVersion < 6) {
       // Add account column to alerts for version 6
       await db.execute('ALTER TABLE alerts ADD COLUMN account TEXT DEFAULT ""');
+    }
+
+    if (oldVersion < 7) {
+      // Add notification columns to alerts for version 7
+      await db.execute(
+        'ALTER TABLE alerts ADD COLUMN notified50 INTEGER DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE alerts ADD COLUMN notified80 INTEGER DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE alerts ADD COLUMN notified100 INTEGER DEFAULT 0',
+      );
     }
   }
 }

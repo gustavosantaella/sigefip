@@ -10,6 +10,7 @@ import 'package:nexo_finance/modules/screens/new_user/onboarding_screen.dart';
 import 'package:nexo_finance/core/constants/theme.dart' as constants;
 import 'package:nexo_finance/modules/screens/transaction/transactions_screen.dart';
 import 'package:nexo_finance/shared/services/offline/storage_service.dart';
+import 'package:nexo_finance/shared/services/notification_service.dart';
 import 'package:nexo_finance/modules/screens/profile/profile_screen.dart';
 import 'package:nexo_finance/modules/screens/profile/personal_info_screen.dart';
 import 'package:nexo_finance/modules/screens/settings/settings_screen.dart';
@@ -18,6 +19,7 @@ import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.initialize();
   await initializeDateFormatting('es_ES', null);
 
   final String? onboardingCompleted = await StorageService.instance.read(

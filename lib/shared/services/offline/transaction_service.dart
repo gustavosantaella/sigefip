@@ -4,6 +4,7 @@ import 'package:nexo_finance/shared/services/offline/category_service.dart';
 import 'package:nexo_finance/shared/services/offline/storage_service.dart';
 import 'package:nexo_finance/shared/notifiers/data_sync_notifier.dart';
 import 'package:nexo_finance/shared/services/offline/account_service.dart';
+import 'package:nexo_finance/shared/services/offline/alert_service.dart';
 
 class TransactionService {
   static final StorageService storageService = StorageService.instance;
@@ -27,6 +28,14 @@ class TransactionService {
     );
 
     dataSyncNotifier.notifyTransactionChange();
+
+    // Check alerts
+    try {
+      print('CHECKING_ALERTS: Triggered from TransactionService');
+      await AlertService.checkAlerts();
+    } catch (e) {
+      print('CHECKING_ALERTS ERROR: $e');
+    }
   }
 
   static Future<List<Transaction>> getTransactions() async {
