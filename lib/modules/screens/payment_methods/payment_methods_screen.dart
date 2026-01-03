@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexo_finance/l10n/generated/app_localizations.dart';
 
 class PaymentMethodsScreen extends StatelessWidget {
   const PaymentMethodsScreen({super.key});
@@ -9,7 +10,7 @@ class PaymentMethodsScreen extends StatelessWidget {
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: const Text('Métodos de Pago'),
+        title: Text(AppLocalizations.of(context)!.paymentMethodsTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -28,7 +29,7 @@ class PaymentMethodsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                'Métodos de Pago',
+                AppLocalizations.of(context)!.paymentMethodsTitle,
                 style: TextStyle(
                   color: Colors.grey[400],
                   fontSize: 20,
@@ -37,7 +38,7 @@ class PaymentMethodsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'Esta función estará disponible próximamente',
+                AppLocalizations.of(context)!.comingSoon,
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.grey[600], fontSize: 14),
               ),

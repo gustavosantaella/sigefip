@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../shared/widgets/nav_item.dart';
+import 'package:nexo_finance/l10n/generated/app_localizations.dart';
 
 import '../../router/routes.dart';
 import 'package:nexo_finance/shared/services/notification_service.dart';
@@ -50,11 +51,29 @@ class _HomeScreenState extends State<HomeScreen> {
           children: MainRouter.routes.asMap().entries.map((entry) {
             final int idx = entry.key;
             final AppRoute route = entry.value;
+
+            String label = '';
+            final l10n = AppLocalizations.of(context)!;
+
+            switch (idx) {
+              case 0:
+                label = l10n.navHome;
+                break;
+              case 1:
+                label = l10n.navAccounts;
+                break;
+              case 2:
+                label = l10n.navTransactions;
+                break;
+              default:
+                label = route.title;
+            }
+
             return GestureDetector(
               onTap: () => setState(() => _currentIndex = idx),
               child: NavItem(
                 icon: route.icon,
-                label: route.title,
+                label: label,
                 isSelected: _currentIndex == idx,
               ),
             );

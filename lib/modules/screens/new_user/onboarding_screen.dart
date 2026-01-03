@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexo_finance/l10n/generated/app_localizations.dart';
 import 'package:nexo_finance/shared/services/offline/storage_service.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -12,54 +13,47 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  final List<OnboardingData> _pages = [
+  List<OnboardingData> get _pages => [
     OnboardingData(
-      title: '¡Bienvenido a Nexo Finance!',
-      description:
-          'Tu compañero ideal para el control total de tus finanzas personales.',
+      title: AppLocalizations.of(context)!.onboardingTitle1,
+      description: AppLocalizations.of(context)!.onboardingDesc1,
       icon: Icons.account_balance_wallet_rounded,
-      tip: 'Pequeños ahorros hoy, grandes metas mañana.',
+      tip: AppLocalizations.of(context)!.onboardingTip1,
       color: const Color(0xFF6C63FF),
     ),
     OnboardingData(
-      title: 'Transacciones Diarias',
-      description:
-          'Podrás registrar tus ingresos y egresos diarios de forma rápida en el módulo de transacciones.',
+      title: AppLocalizations.of(context)!.onboardingTitle2,
+      description: AppLocalizations.of(context)!.onboardingDesc2,
       icon: Icons.swap_horiz_rounded,
-      tip: 'Mantén un registro constante para no perder ni un centavo.',
+      tip: AppLocalizations.of(context)!.onboardingTip2,
       color: Colors.greenAccent,
     ),
     OnboardingData(
-      title: 'Gestiona tus Cuentas',
-      description:
-          'Crea múltiples cuentas para separar tus ahorros de tus gastos diarios o inversiones.',
+      title: AppLocalizations.of(context)!.onboardingTitle3,
+      description: AppLocalizations.of(context)!.onboardingDesc3,
       icon: Icons.account_balance_rounded,
-      tip:
-          'Tener cuentas separadas te ayuda a no gastar lo que tienes destinado al ahorro.',
+      tip: AppLocalizations.of(context)!.onboardingTip3,
       color: Colors.tealAccent,
     ),
     OnboardingData(
-      title: 'Historial en el Calendario',
-      description:
-          '¿Te olvidaste cuándo hiciste un movimiento? No te preocupes, podrás ver todos tus movimientos en una fecha específica dentro del calendario.',
+      title: AppLocalizations.of(context)!.onboardingTitle4,
+      description: AppLocalizations.of(context)!.onboardingDesc4,
       icon: Icons.calendar_month_rounded,
-      tip: 'La organización es la clave del éxito financiero.',
+      tip: AppLocalizations.of(context)!.onboardingTip4,
       color: Colors.orangeAccent,
     ),
     OnboardingData(
-      title: 'Análisis y Métricas',
-      description:
-          'Visualiza el comportamiento de tu dinero con gráficos detallados por categorías y periodos.',
+      title: AppLocalizations.of(context)!.onboardingTitle5,
+      description: AppLocalizations.of(context)!.onboardingDesc5,
       icon: Icons.pie_chart_rounded,
-      tip: 'Entiende en qué gastas para optimizar tus ahorros.',
+      tip: AppLocalizations.of(context)!.onboardingTip5,
       color: Colors.blueAccent,
     ),
     OnboardingData(
-      title: 'Alcanza tus Objetivos',
-      description:
-          'Empieza a administrar tus finanzas para que alcances tus objetivos y vivas con tranquilidad.',
+      title: AppLocalizations.of(context)!.onboardingTitle6,
+      description: AppLocalizations.of(context)!.onboardingDesc6,
       icon: Icons.auto_graph_rounded,
-      tip: '¡El mejor momento para empezar es ahora!',
+      tip: AppLocalizations.of(context)!.onboardingTip6,
       color: const Color(0xFF6C63FF),
     ),
   ];
@@ -100,7 +94,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: TextButton(
                     onPressed: _completeOnboarding,
                     child: Text(
-                      'Saltar',
+                      AppLocalizations.of(context)!.skip,
                       style: TextStyle(color: Colors.grey[400], fontSize: 16),
                     ),
                   ),
@@ -257,7 +251,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             children: [
                               Text(
                                 _currentPage == _pages.length - 1
-                                    ? 'Empezar'
+                                    ? AppLocalizations.of(context)!.start
                                     : '',
                                 style: const TextStyle(
                                   color: Colors.white,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nexo_finance/l10n/generated/app_localizations.dart';
+import 'package:nexo_finance/core/managers/locale_manager.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -8,63 +10,77 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  String _selectedLanguage = 'es';
+  // Map of language codes to display names
+  final Map<String, String> _languages = {
+    'es': 'Español',
+    'en': 'English',
+    'pt': 'Português',
+    'zh': '中文 (Chinese)',
+    'ja': '日本語 (Japanese)',
+  };
 
   void _showLanguageDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E1E1E),
-        title: const Text(
-          'Seleccionar Idioma',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            RadioListTile<String>(
-              value: 'es',
-              groupValue: _selectedLanguage,
-              onChanged: (value) {
-                setState(() {
-                  _selectedLanguage = value!;
-                });
-                Navigator.pop(context);
-              },
-              title: const Text(
-                'Español',
-                style: TextStyle(color: Colors.white),
+      builder: (context) {
+        final currentLocale = LocaleManager().value.languageCode;
+        final l10n = AppLocalizations.of(context)!;
+
+        return AlertDialog(
+          backgroundColor: const Color(0xFF1E1E1E),
+          title: Text(
+            l10n.selectLanguage,
+            style: const TextStyle(color: Colors.white),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: _languages.entries.map((entry) {
+              return RadioListTile<String>(
+                value: entry.key,
+                groupValue: currentLocale,
+                onChanged: (value) {
+                  if (value != null) {
+                    LocaleManager().setLocale(value);
+                    Navigator.pop(context);
+                    setState(
+                      () {},
+                    ); // Trigger rebuild to show updated selection
+                  }
+                },
+                title: Text(
+                  entry.value,
+                  style: const TextStyle(color: Colors.white),
+                ),
+                activeColor: Colors.purple.shade400,
+              );
+            }).toList(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                l10n.cancel,
+                style: const TextStyle(color: Colors.purple),
               ),
-              activeColor: Colors.purple.shade400,
-            ),
-            RadioListTile<String>(
-              value: 'en',
-              groupValue: _selectedLanguage,
-              onChanged: (value) {
-                setState(() {
-                  _selectedLanguage = value!;
-                });
-                Navigator.pop(context);
-              },
-              title: const Text(
-                'English',
-                style: TextStyle(color: Colors.white),
-              ),
-              activeColor: Colors.purple.shade400,
             ),
           ],
-        ),
-      ),
+        );
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final String currentLanguageCode = LocaleManager().value.languageCode;
+    final String currentLanguageName =
+        _languages[currentLanguageCode] ?? 'Español';
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: const Text('Configuración'),
+        title: Text(l10n.settingsTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -107,9 +123,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Idioma',
-                            style: TextStyle(
+                          Text(
+                            l10n.language,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
@@ -117,7 +133,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            _selectedLanguage == 'es' ? 'Español' : 'English',
+                            currentLanguageName,
                             style: TextStyle(
                               color: Colors.grey[400],
                               fontSize: 14,
@@ -129,30 +145,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Icon(Icons.chevron_right, color: Colors.grey[600]),
                   ],
                 ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.orange.shade900.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.orange.shade800),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.info_outline, color: Colors.orange.shade400),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'El cambio de idioma estará disponible en una próxima actualización',
-                      style: TextStyle(
-                        color: Colors.orange.shade200,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ),
           ],

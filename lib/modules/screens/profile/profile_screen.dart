@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexo_finance/l10n/generated/app_localizations.dart';
 import 'package:nexo_finance/shared/models/user_model.dart';
 import 'package:nexo_finance/shared/models/account_model.dart';
 import 'package:nexo_finance/shared/services/offline/user_service.dart';
@@ -69,23 +70,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: const Text(
-          '⚠️ Eliminar Datos Permanentemente',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          AppLocalizations.of(context)!.deleteDataTitle,
+          style: const TextStyle(color: Colors.white),
         ),
-        content: const Text(
-          '¿Estás seguro de que deseas eliminar TODOS tus datos? Esta acción NO se puede deshacer.\n\nSe eliminarán:\n• Todas las cuentas\n• Todas las transacciones\n• Todas las categorías\n• Toda la información personal',
-          style: TextStyle(color: Colors.white70),
+        content: Text(
+          AppLocalizations.of(context)!.deleteDataContent,
+          style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Eliminar Todo'),
+            child: Text(AppLocalizations.of(context)!.deleteAll),
           ),
         ],
       ),
@@ -101,8 +102,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Todos los datos han sido eliminados'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.dataDeleted),
             backgroundColor: Colors.red,
           ),
         );
@@ -117,9 +118,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: const Text(
-          'Exportar Datos',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          AppLocalizations.of(context)!.exportData,
+          style: const TextStyle(color: Colors.white),
         ),
         content: const Text(
           '¿Deseas exportar todos tus datos? Esta función estará disponible próximamente.',
@@ -128,7 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
@@ -140,9 +141,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (confirm == true && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Función de exportación próximamente disponible'),
-        ),
+        SnackBar(content: Text(AppLocalizations.of(context)!.exportComingSoon)),
       );
     }
   }
@@ -171,9 +170,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: const Icon(Icons.arrow_back, color: Colors.white),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Text(
-                    'Perfil',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.profileTitle,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -219,20 +218,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: StatCard(count: _accountsCount, label: 'Cuentas'),
+                    child: StatCard(
+                      count: _accountsCount,
+                      label: AppLocalizations.of(context)!.statAccounts,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: StatCard(
                       count: _categoriesCount,
-                      label: 'Categorías',
+                      label: AppLocalizations.of(context)!.statCategories,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: StatCard(
                       count: _transactionsCount,
-                      label: 'Transacciones',
+                      label: AppLocalizations.of(context)!.statTransactions,
                     ),
                   ),
                 ],
@@ -240,9 +242,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 30),
 
               // Account Section
-              const Text(
-                'Cuenta',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.sectionAccount,
+                style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -251,23 +253,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 12),
               ProfileMenuItem(
                 icon: Icons.person_outline,
-                title: 'Información Personal',
+                title: AppLocalizations.of(context)!.personalInfo,
                 subtitle: _user?.name ?? 'Username',
                 onTap: () => Navigator.pushNamed(context, '/personal-info'),
               ),
               const SizedBox(height: 12),
               ProfileMenuItem(
                 icon: Icons.account_balance_wallet_outlined,
-                title: 'Cuenta Principal',
+                title: AppLocalizations.of(context)!.mainAccount,
                 subtitle: _defaultAccount?.name ?? 'No configurada',
                 onTap: () => Navigator.pushNamed(context, '/accounts'),
               ),
               const SizedBox(height: 30),
 
               // Preferences Section
-              const Text(
-                'Preferencias',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.sectionPreferences,
+                style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -276,15 +278,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 12),
               ProfileMenuItem(
                 icon: Icons.settings_outlined,
-                title: 'Configuración',
+                title: AppLocalizations.of(context)!.settingsLabel,
                 onTap: () => Navigator.pushNamed(context, '/settings'),
               ),
               const SizedBox(height: 30),
 
               // Information Section
-              const Text(
-                'Información',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.sectionInfo,
+                style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -304,7 +306,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Versión',
+                          AppLocalizations.of(context)!.version,
                           style: TextStyle(
                             color: Colors.grey[400],
                             fontSize: 14,
@@ -325,7 +327,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Build',
+                          AppLocalizations.of(context)!.build,
                           style: TextStyle(
                             color: Colors.grey[400],
                             fontSize: 14,
@@ -349,7 +351,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // Copyright
               Center(
                 child: Text(
-                  '© 2026 Todos los derechos reservados',
+                  AppLocalizations.of(context)!.copyright,
                   style: TextStyle(color: Colors.grey[600], fontSize: 12),
                 ),
               ),
@@ -367,9 +369,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'Exportar Datos',
-                    style: TextStyle(
+                  child: Text(
+                    AppLocalizations.of(context)!.exportData,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,

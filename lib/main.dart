@@ -17,11 +17,15 @@ import 'package:nexo_finance/modules/screens/settings/settings_screen.dart';
 import 'package:nexo_finance/shared/services/ad_service.dart';
 
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:nexo_finance/l10n/generated/app_localizations.dart';
+import 'package:nexo_finance/core/managers/locale_manager.dart';
 
 void main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
-    await initializeDateFormatting('es_ES', null);
+    await LocaleManager().loadLocale();
+    await initializeDateFormatting();
     await NotificationService.initialize();
 
     final adService = AdService();
@@ -52,23 +56,42 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Nexo Finance',
-      theme: constants.Theme.getTheme(),
-      initialRoute: showOnboarding ? '/onboarding' : '/',
-      routes: {
-        '/': (context) => const HomeScreen(),
-        '/onboarding': (context) => const OnboardingScreen(),
-        '/budget': (context) => const BudgetScreen(),
-        '/accounts': (context) => const AccountsScreen(),
-        '/transactions': (context) => const TransactionsScreen(),
-        '/categories': (context) => const CategoriesScreen(),
-        '/calendar': (context) => const CalendarScreen(),
-        '/metrics': (context) => const MetricsScreen(),
-        '/alerts': (context) => const AlertsScreen(),
-        '/profile': (context) => const ProfileScreen(),
-        '/personal-info': (context) => const PersonalInfoScreen(),
-        '/settings': (context) => const SettingsScreen(),
+    return ValueListenableBuilder<Locale>(
+      valueListenable: LocaleManager(),
+      builder: (context, locale, child) {
+        return MaterialApp(
+          title: 'Nexo Finance',
+          theme: constants.Theme.getTheme(),
+          locale: locale,
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('es'), // Español
+            Locale('en'), // English
+            Locale('pt'), // Português
+            Locale('zh'), // Chino
+            Locale('ja'), // Japonés
+          ],
+          initialRoute: showOnboarding ? '/onboarding' : '/',
+          routes: {
+            '/': (context) => const HomeScreen(),
+            '/onboarding': (context) => const OnboardingScreen(),
+            '/budget': (context) => const BudgetScreen(),
+            '/accounts': (context) => const AccountsScreen(),
+            '/transactions': (context) => const TransactionsScreen(),
+            '/categories': (context) => const CategoriesScreen(),
+            '/calendar': (context) => const CalendarScreen(),
+            '/metrics': (context) => const MetricsScreen(),
+            '/alerts': (context) => const AlertsScreen(),
+            '/profile': (context) => const ProfileScreen(),
+            '/personal-info': (context) => const PersonalInfoScreen(),
+            '/settings': (context) => const SettingsScreen(),
+          },
+        );
       },
     );
   }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:nexo_finance/l10n/generated/app_localizations.dart';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -142,10 +143,12 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                           _searchQuery = value;
                           _applyFilters();
                         },
-                        decoration: const InputDecoration(
-                          icon: Icon(Icons.search, color: Colors.grey),
-                          hintText: 'Buscar transacciones...',
-                          hintStyle: TextStyle(color: Colors.grey),
+                        decoration: InputDecoration(
+                          icon: const Icon(Icons.search, color: Colors.grey),
+                          hintText: AppLocalizations.of(
+                            context,
+                          )!.searchPlaceholder,
+                          hintStyle: const TextStyle(color: Colors.grey),
                           border: InputBorder.none,
                         ),
                       ),
@@ -168,7 +171,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       child: Row(
                         children: [
                           _FilterChip(
-                            label: 'Todas',
+                            label: AppLocalizations.of(context)!.filterAll,
                             isSelected: _selectedFilter == 'Todas',
                             onTap: () {
                               setState(() => _selectedFilter = 'Todas');
@@ -177,7 +180,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                           ),
                           const SizedBox(width: 12),
                           _FilterChip(
-                            label: 'Ingresos',
+                            label: AppLocalizations.of(context)!.income,
                             isSelected: _selectedFilter == 'Ingresos',
                             onTap: () {
                               setState(() => _selectedFilter = 'Ingresos');
@@ -186,7 +189,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                           ),
                           const SizedBox(width: 12),
                           _FilterChip(
-                            label: 'Egresos',
+                            label: AppLocalizations.of(context)!.expense,
                             isSelected: _selectedFilter == 'Egresos',
                             onTap: () {
                               setState(() => _selectedFilter = 'Egresos');
@@ -224,7 +227,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                                       ).showSnackBar(
                                         SnackBar(
                                           content: Text(
-                                            'Eliminado: ${t.title}',
+                                            '${AppLocalizations.of(context)!.deletedItem}: ${t.title}',
                                           ),
                                         ),
                                       );
@@ -327,47 +330,55 @@ class _TransactionDetailSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomBottomSheet(
-      title: 'Detalle de Transacción',
+      title: AppLocalizations.of(context)!.transactionDetails,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildDetailRow(Icons.title, 'Título', transaction.title),
+          _buildDetailRow(
+            Icons.title,
+            AppLocalizations.of(context)!.titleLabel,
+            transaction.title,
+          ),
           _buildDetailRow(
             transaction.icon ?? Icons.category,
-            'Categoría',
+            AppLocalizations.of(context)!.categoryLabel,
             transaction.category,
             iconColor: transaction.color,
           ),
           _buildDetailRow(
             Icons.account_balance_wallet,
-            'Cuenta',
+            AppLocalizations.of(context)!.accountLabel,
             transaction.account,
           ),
           _buildDetailRow(
             Icons.money,
-            'Monto',
+            AppLocalizations.of(context)!.amountLabel,
             '${transaction.isExpense ? "-" : "+"}\$ ${transaction.amount}',
             textColor: transaction.isExpense ? Colors.redAccent : Colors.green,
           ),
           if (transaction.conversionRate != 1.0)
             _buildDetailRow(
               Icons.currency_exchange,
-              'Tasa de Conversión',
+              AppLocalizations.of(context)!.conversionRateLabel,
               '${transaction.conversionRate}',
             ),
           _buildDetailRow(
             Icons.calendar_today,
-            'Fecha',
+            AppLocalizations.of(context)!.dateLabel,
             DateFormat('dd/MM/yyyy HH:mm').format(transaction.date),
           ),
           if (transaction.note?.isNotEmpty ?? false)
-            _buildDetailRow(Icons.note, 'Nota', transaction.note!),
+            _buildDetailRow(
+              Icons.note,
+              AppLocalizations.of(context)!.noteLabel,
+              transaction.note!,
+            ),
           if (transaction.imagePath != null &&
               transaction.imagePath!.isNotEmpty) ...[
             const SizedBox(height: 10),
-            const Text(
-              'Comprobante',
-              style: TextStyle(color: Colors.grey, fontSize: 13),
+            Text(
+              AppLocalizations.of(context)!.receiptLabel,
+              style: const TextStyle(color: Colors.grey, fontSize: 13),
             ),
             const SizedBox(height: 12),
             ClipRRect(
@@ -532,7 +543,11 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error procesando imagen: $e')),
+            SnackBar(
+              content: Text(
+                '${AppLocalizations.of(context)!.errorProcessingImage}: $e',
+              ),
+            ),
           );
         }
       } finally {
@@ -546,13 +561,16 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   @override
   Widget build(BuildContext context) {
     return CustomBottomSheet(
-      title: 'Nueva Transacción',
+      title: AppLocalizations.of(context)!.newTransaction,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Title Input
-          CustomTextField(controller: _titleController, label: 'Título'),
+          CustomTextField(
+            controller: _titleController,
+            label: AppLocalizations.of(context)!.titleLabel,
+          ),
           const SizedBox(height: 16),
 
           // Type Selection (Income/Expense)
@@ -560,7 +578,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
             children: [
               Expanded(
                 child: TypeChip(
-                  label: 'Ingreso',
+                  label: AppLocalizations.of(context)!.income,
                   isSelected: _transactionType == 'Ingreso',
                   color: Colors.green,
                   onTap: () {
@@ -572,7 +590,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
               const SizedBox(width: 12),
               Expanded(
                 child: TypeChip(
-                  label: 'Egreso',
+                  label: AppLocalizations.of(context)!.expense,
                   isSelected: _transactionType == 'Egreso',
                   color: Colors.redAccent,
                   onTap: () {
@@ -586,7 +604,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
           const SizedBox(height: 16),
 
           CustomDropdown<String>(
-            label: 'Cuenta',
+            label: AppLocalizations.of(context)!.accountLabel,
             value: _selectedAccount,
             items: _accountNames,
             itemLabelBuilder: (item) => item,
@@ -596,7 +614,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
 
           // Category Dropdown
           CustomDropdown<String>(
-            label: 'Categoría',
+            label: AppLocalizations.of(context)!.categoryLabel,
             value: _selectedCategory,
             items: _categories,
             itemLabelBuilder: (item) => item,
@@ -607,7 +625,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
           // Amount Input
           CustomTextField(
             controller: _amountController,
-            label: 'Monto',
+            label: AppLocalizations.of(context)!.amountLabel,
             keyboardType: TextInputType.number,
             prefixText: '\$ ',
           ),
@@ -616,7 +634,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
           // Note Input
           CustomTextField(
             controller: _noteController,
-            label: 'Nota (Opcional)',
+            label: '${AppLocalizations.of(context)!.noteLabel} (Opcional)',
             maxLines: 2,
           ),
           const SizedBox(height: 16),
@@ -627,7 +645,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
             child: Row(
               children: [
                 Text(
-                  'Extras',
+                  AppLocalizations.of(context)!.extrasLabel,
                   style: TextStyle(
                     color: _showExtras ? const Color(0xFF6C63FF) : Colors.grey,
                     fontWeight: FontWeight.bold,
@@ -649,13 +667,16 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
             const SizedBox(height: 16),
             CustomTextField(
               controller: _conversionRateController,
-              label: 'Tasa de Conversión',
+              label: AppLocalizations.of(context)!.conversionRateLabel,
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Foto del Comprobante',
-              style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+            Text(
+              AppLocalizations.of(context)!.receiptLabel,
+              style: const TextStyle(
+                color: Colors.grey,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8),
             GestureDetector(
@@ -678,19 +699,19 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                           width: double.infinity,
                         ),
                       )
-                    : const Center(
+                    : Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.add_a_photo,
                               color: Colors.grey,
                               size: 40,
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Text(
-                              'Agregar Foto',
-                              style: TextStyle(color: Colors.grey),
+                              AppLocalizations.of(context)!.addPhotoLabel,
+                              style: const TextStyle(color: Colors.grey),
                             ),
                           ],
                         ),
@@ -702,7 +723,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
           const SizedBox(height: 30),
 
           CustomButton(
-            text: 'Guardar Transacción',
+            text: AppLocalizations.of(context)!.saveTransaction,
             onPressed: () async {
               // Find the selected category object to get its icon and color
               final selectedCategoryObj = _allCategories.firstWhere(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexo_finance/l10n/generated/app_localizations.dart';
 import 'package:nexo_finance/shared/models/category_model.dart';
 import 'package:nexo_finance/shared/services/offline/category_service.dart';
 import '../../../shared/notifiers/data_sync_notifier.dart';
@@ -53,9 +54,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 children: [
                   const CustomBackButton(),
                   const SizedBox(width: 16),
-                  const Text(
-                    'Categorías',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.categoriesTitle,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -149,12 +150,14 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       ),
       builder: (context) {
         return CustomBottomSheet(
-          title: '¿Eliminar categoría?',
+          title: AppLocalizations.of(context)!.deleteCategoryTitle,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                '¿Está seguro de querer eliminar la categoría "${category.name}"?',
+                AppLocalizations.of(
+                  context,
+                )!.deleteCategoryContent(category.name),
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.grey, fontSize: 16),
               ),
@@ -163,7 +166,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 children: [
                   Expanded(
                     child: CustomButton(
-                      text: 'No',
+                      text: AppLocalizations.of(context)!.no,
                       backgroundColor: Colors.white10,
                       onPressed: () => Navigator.pop(context),
                     ),
@@ -171,7 +174,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: CustomButton(
-                      text: 'Sí',
+                      text: AppLocalizations.of(context)!.yes,
                       backgroundColor: Colors.redAccent,
                       onPressed: () async {
                         await CategoryService.delete(category.id);
@@ -180,7 +183,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Categoría eliminada'),
+                              content: Text(
+                                AppLocalizations.of(context)!.categoryDeleted,
+                              ),
                               backgroundColor: Colors.redAccent,
                             ),
                           );
@@ -305,7 +310,7 @@ class _AddCategoryFormState extends State<AddCategoryForm> {
   @override
   Widget build(BuildContext context) {
     return CustomBottomSheet(
-      title: 'Nueva Categoría',
+      title: AppLocalizations.of(context)!.newCategory,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -315,7 +320,7 @@ class _AddCategoryFormState extends State<AddCategoryForm> {
             children: [
               Expanded(
                 child: TypeChip(
-                  label: 'Ingreso',
+                  label: AppLocalizations.of(context)!.income,
                   isSelected: _categoryType == 'Ingreso',
                   color: Colors.green,
                   onTap: () => setState(() => _categoryType = 'Ingreso'),
@@ -324,7 +329,7 @@ class _AddCategoryFormState extends State<AddCategoryForm> {
               const SizedBox(width: 12),
               Expanded(
                 child: TypeChip(
-                  label: 'Egreso',
+                  label: AppLocalizations.of(context)!.expense,
                   isSelected: _categoryType == 'Egreso',
                   color: Colors.redAccent,
                   onTap: () => setState(() => _categoryType = 'Egreso'),
@@ -336,14 +341,14 @@ class _AddCategoryFormState extends State<AddCategoryForm> {
 
           CustomTextField(
             controller: _nameController,
-            label: 'Nombre de la categoría',
-            hintText: 'Ej. Comida, Alquiler...',
+            label: AppLocalizations.of(context)!.categoryNameLabel,
+            hintText: AppLocalizations.of(context)!.categoryNameHint,
           ),
           const SizedBox(height: 20),
 
-          const Text(
-            'Icono',
-            style: TextStyle(color: Colors.grey, fontSize: 14),
+          Text(
+            AppLocalizations.of(context)!.iconLabel,
+            style: const TextStyle(color: Colors.grey, fontSize: 14),
           ),
           const SizedBox(height: 12),
           SizedBox(
@@ -382,9 +387,9 @@ class _AddCategoryFormState extends State<AddCategoryForm> {
           ),
           const SizedBox(height: 20),
 
-          const Text(
-            'Color',
-            style: TextStyle(color: Colors.grey, fontSize: 14),
+          Text(
+            AppLocalizations.of(context)!.colorLabel,
+            style: const TextStyle(color: Colors.grey, fontSize: 14),
           ),
           const SizedBox(height: 12),
           SizedBox(
@@ -416,7 +421,7 @@ class _AddCategoryFormState extends State<AddCategoryForm> {
           const SizedBox(height: 30),
 
           CustomButton(
-            text: 'Guardar Categoría',
+            text: AppLocalizations.of(context)!.saveCategory,
             onPressed: () async {
               final newCategory = Category(
                 id: DateTime.now().millisecondsSinceEpoch.toString(),

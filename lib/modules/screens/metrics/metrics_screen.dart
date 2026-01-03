@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexo_finance/l10n/generated/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:nexo_finance/shared/models/transaction_model.dart';
 import 'package:nexo_finance/shared/services/offline/transaction_service.dart';
@@ -92,9 +93,9 @@ class _MetricsScreenState extends State<MetricsScreen> {
                       children: [
                         const CustomBackButton(),
                         const SizedBox(width: 16),
-                        const Text(
-                          'Métricas',
-                          style: TextStyle(
+                        Text(
+                          AppLocalizations.of(context)!.metricsTitle,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -109,15 +110,30 @@ class _MetricsScreenState extends State<MetricsScreen> {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          _buildFilterChip('Diario'),
+                          _buildFilterChip(
+                            'Diario',
+                            AppLocalizations.of(context)!.daily,
+                          ),
                           const SizedBox(width: 12),
-                          _buildFilterChip('Semanal'),
+                          _buildFilterChip(
+                            'Semanal',
+                            AppLocalizations.of(context)!.weekly,
+                          ),
                           const SizedBox(width: 12),
-                          _buildFilterChip('Mensual'),
+                          _buildFilterChip(
+                            'Mensual',
+                            AppLocalizations.of(context)!.monthly,
+                          ),
                           const SizedBox(width: 12),
-                          _buildFilterChip('Anual'),
+                          _buildFilterChip(
+                            'Anual',
+                            AppLocalizations.of(context)!.annual,
+                          ),
                           const SizedBox(width: 12),
-                          _buildFilterChip('Intervalo'),
+                          _buildFilterChip(
+                            'Intervalo',
+                            AppLocalizations.of(context)!.interval,
+                          ),
                         ],
                       ),
                     ),
@@ -139,9 +155,9 @@ class _MetricsScreenState extends State<MetricsScreen> {
                     _buildSummarySection(),
                     const SizedBox(height: 40),
 
-                    const Text(
-                      'Gastos por Categoría',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.expensesByCategory,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -151,9 +167,9 @@ class _MetricsScreenState extends State<MetricsScreen> {
                     _buildCategoryChart(isExpense: true),
 
                     const SizedBox(height: 40),
-                    const Text(
-                      'Ingresos por Categoría',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.incomeByCategory,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -171,14 +187,14 @@ class _MetricsScreenState extends State<MetricsScreen> {
     );
   }
 
-  Widget _buildFilterChip(String label) {
-    final isSelected = _selectedPeriod == label;
+  Widget _buildFilterChip(String value, String label) {
+    final isSelected = _selectedPeriod == value;
     return TypeChip(
       label: label,
       isSelected: isSelected,
       color: const Color(0xFF6C63FF),
       onTap: () async {
-        if (label == 'Intervalo') {
+        if (value == 'Intervalo') {
           final picked = await showDateRangePicker(
             context: context,
             firstDate: DateTime(2020),
@@ -201,14 +217,14 @@ class _MetricsScreenState extends State<MetricsScreen> {
 
           if (picked != null) {
             setState(() {
-              _selectedPeriod = label;
+              _selectedPeriod = value;
               _customRange = picked;
               _applyFilter();
             });
           }
         } else {
           setState(() {
-            _selectedPeriod = label;
+            _selectedPeriod = value;
             _applyFilter();
           });
         }
@@ -240,10 +256,10 @@ class _MetricsScreenState extends State<MetricsScreen> {
           color: const Color(0xFF1E1E1E),
           borderRadius: BorderRadius.circular(20),
         ),
-        child: const Center(
+        child: Center(
           child: Text(
-            'No hay transacciones en este periodo',
-            style: TextStyle(color: Colors.grey),
+            AppLocalizations.of(context)!.noTransactionsPeriod,
+            style: const TextStyle(color: Colors.grey),
           ),
         ),
       );
@@ -252,9 +268,9 @@ class _MetricsScreenState extends State<MetricsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Resumen por Cuenta',
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context)!.accountSummary,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -316,13 +332,13 @@ class _MetricsScreenState extends State<MetricsScreen> {
                   Row(
                     children: [
                       _buildMiniStat(
-                        'Ingresos',
+                        AppLocalizations.of(context)!.incomeLabel,
                         stats['income']!,
                         Colors.green,
                       ),
                       const SizedBox(width: 16),
                       _buildMiniStat(
-                        'Egresos',
+                        AppLocalizations.of(context)!.expenseLabel,
                         stats['expense']!,
                         Colors.redAccent,
                       ),
@@ -387,7 +403,7 @@ class _MetricsScreenState extends State<MetricsScreen> {
         height: 100,
         alignment: Alignment.center,
         child: Text(
-          'Sin datos para mostrar',
+          AppLocalizations.of(context)!.noData,
           style: TextStyle(color: Colors.grey[600]),
         ),
       );
@@ -417,9 +433,9 @@ class _MetricsScreenState extends State<MetricsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Uso de Cuentas',
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context)!.accountUsage,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -429,17 +445,17 @@ class _MetricsScreenState extends State<MetricsScreen> {
         Row(
           children: [
             _buildInfoCard(
-              'Más Usada',
+              AppLocalizations.of(context)!.mostUsed,
               mostUsed.key,
-              '${mostUsed.value} trans.',
+              '${mostUsed.value} ${AppLocalizations.of(context)!.transAbbrev}',
               const Color(0xFF6C63FF),
               Icons.star_outline,
             ),
             const SizedBox(width: 16),
             _buildInfoCard(
-              'Menos Usada',
+              AppLocalizations.of(context)!.leastUsed,
               leastUsed.key,
-              '${leastUsed.value} trans.',
+              '${leastUsed.value} ${AppLocalizations.of(context)!.transAbbrev}',
               Colors.orangeAccent,
               Icons.trending_down,
             ),

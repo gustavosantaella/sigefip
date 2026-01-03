@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexo_finance/l10n/generated/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:nexo_finance/shared/models/transaction_model.dart';
 import 'package:nexo_finance/shared/services/offline/transaction_service.dart';
@@ -104,9 +105,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 children: [
                   const CustomBackButton(),
                   const SizedBox(width: 16),
-                  const Text(
-                    'Calendario',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.calendarTitle,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -193,22 +194,31 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   // Days Header
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
-                        .map(
-                          (day) => Expanded(
-                            child: Center(
-                              child: Text(
-                                day,
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
+                    children:
+                        [
+                              AppLocalizations.of(context)!.daysMon,
+                              AppLocalizations.of(context)!.daysTue,
+                              AppLocalizations.of(context)!.daysWed,
+                              AppLocalizations.of(context)!.daysThu,
+                              AppLocalizations.of(context)!.daysFri,
+                              AppLocalizations.of(context)!.daysSat,
+                              AppLocalizations.of(context)!.daysSun,
+                            ]
+                            .map(
+                              (day) => Expanded(
+                                child: Center(
+                                  child: Text(
+                                    day,
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                        )
-                        .toList(),
+                            )
+                            .toList(),
                   ),
                   const SizedBox(height: 8),
                   // Calendar Grid
@@ -328,7 +338,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Día ${_selectedDate.day}',
+                            '${AppLocalizations.of(context)!.day} ${_selectedDate.day}',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 18,
@@ -370,7 +380,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
-                                    'No hay transacciones',
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.noTransactions,
                                     style: TextStyle(color: Colors.grey[500]),
                                   ),
                                 ],

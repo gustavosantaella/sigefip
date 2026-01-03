@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexo_finance/l10n/generated/app_localizations.dart';
 import '../../../shared/widgets/custom_back_button.dart';
 import '../../../shared/widgets/nav_item.dart';
 import 'budget_list_screen.dart';
@@ -32,9 +33,9 @@ class _BudgetScreenState extends State<BudgetScreen> {
                 children: [
                   const CustomBackButton(),
                   const SizedBox(width: 16),
-                  const Text(
-                    'Presupuesto',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.budgetTitle,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -64,8 +65,16 @@ class _BudgetScreenState extends State<BudgetScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildNavItem(0, Icons.list, 'Listado'),
-            _buildNavItem(1, Icons.bar_chart, 'Métricas'),
+            _buildNavItem(
+              0,
+              Icons.list,
+              AppLocalizations.of(context)!.budgetList,
+            ),
+            _buildNavItem(
+              1,
+              Icons.bar_chart,
+              AppLocalizations.of(context)!.budgetMetrics,
+            ),
           ],
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexo_finance/l10n/generated/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
 import '../../../shared/models/alert_model.dart';
@@ -191,10 +192,13 @@ class _AlertsScreenState extends State<AlertsScreen> {
                       }
                     },
                     itemBuilder: (_) => [
-                      const PopupMenuItem(value: 'edit', child: Text('Editar')),
-                      const PopupMenuItem(
+                      PopupMenuItem(
+                        value: 'edit',
+                        child: Text(AppLocalizations.of(context)!.edit),
+                      ),
+                      PopupMenuItem(
                         value: 'delete',
-                        child: Text('Eliminar'),
+                        child: Text(AppLocalizations.of(context)!.delete),
                       ),
                     ],
                   ),

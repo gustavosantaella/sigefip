@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexo_finance/l10n/generated/app_localizations.dart';
 import 'package:nexo_finance/shared/services/offline/account_service.dart';
 import '../../../shared/models/account_model.dart';
 import '../../../shared/widgets/custom_bottom_sheet.dart';
@@ -227,35 +228,35 @@ class _AddAccountFormState extends State<AddAccountForm> {
   @override
   Widget build(BuildContext context) {
     return CustomBottomSheet(
-      title: 'Nueva Cuenta',
+      title: AppLocalizations.of(context)!.newAccount,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CustomTextField(
             controller: _nameController,
-            label: 'Nombre de la cuenta',
-            hintText: 'Ej. Banco, Efectivo...',
+            label: AppLocalizations.of(context)!.accountNameLabel,
+            hintText: AppLocalizations.of(context)!.accountNameHint,
           ),
           const SizedBox(height: 16),
           CustomTextField(
             controller: _balanceController,
-            label: 'Saldo Inicial',
+            label: AppLocalizations.of(context)!.initialBalanceLabel,
             keyboardType: TextInputType.number,
             prefixText: '\$ ',
           ),
           const SizedBox(height: 16),
           CustomDropdown<String>(
-            label: 'Moneda',
+            label: AppLocalizations.of(context)!.currencyLabel,
             value: _selectedCurrency,
             items: currencies,
             itemLabelBuilder: (item) => item,
             onChanged: (val) => setState(() => _selectedCurrency = val),
           ),
           const SizedBox(height: 20),
-          const Text(
-            'Color de la cuenta',
-            style: TextStyle(color: Colors.grey, fontSize: 14),
+          Text(
+            AppLocalizations.of(context)!.accountColorLabel,
+            style: const TextStyle(color: Colors.grey, fontSize: 14),
           ),
           const SizedBox(height: 12),
           SizedBox(

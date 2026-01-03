@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nexo_finance/shared/models/transaction_model.dart';
 import 'package:nexo_finance/shared/services/offline/transaction_service.dart';
 import 'package:nexo_finance/shared/notifiers/data_sync_notifier.dart';
+import 'package:nexo_finance/l10n/generated/app_localizations.dart';
 import 'accounts_section.dart';
 import '../../../../shared/widgets/transactions.dart';
 import 'quick_actions.dart';
@@ -56,9 +57,9 @@ class _HomeDashboardState extends State<HomeDashboard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Finanzas',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.financesTitle,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -96,9 +97,9 @@ class _HomeDashboardState extends State<HomeDashboard> {
           const SizedBox(height: 30),
 
           // Recent Transactions
-          const Text(
-            'Transacciones Recientes',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.recentTransactions,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -112,7 +113,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  'No hay transacciones recientes',
+                  AppLocalizations.of(context)!.noRecentTransactions,
                   style: TextStyle(color: Colors.grey[500]),
                 ),
               ),
