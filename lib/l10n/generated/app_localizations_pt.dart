@@ -457,4 +457,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get comingSoon => 'Esta función estará disponible próximamente';
+
+  @override
+  String get balance => 'Saldo';
 }

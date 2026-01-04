@@ -967,6 +967,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Esta función estará disponible próximamente'**
   String get comingSoon;
+
+  /// No description provided for @balance.
+  ///
+  /// In es, this message translates to:
+  /// **'Saldo'**
+  String get balance;
 }
 
 class _AppLocalizationsDelegate

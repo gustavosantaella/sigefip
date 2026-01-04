@@ -6,11 +6,13 @@ class CategoryChartData {
   final String name;
   final double amount;
   final Color color;
+  final String? currency;
 
   CategoryChartData({
     required this.name,
     required this.amount,
     required this.color,
+    this.currency,
   });
 }
 
@@ -157,10 +159,14 @@ class _CategoryPieChartState extends State<CategoryPieChart> {
                 ),
               ),
               Text(
-                NumberFormat.currency(
-                  symbol: r'$',
-                  decimalDigits: 2,
-                ).format(category.amount),
+                category.currency != null
+                    ? NumberFormat.simpleCurrency(
+                        name: category.currency,
+                      ).format(category.amount)
+                    : NumberFormat.currency(
+                        symbol: r'$',
+                        decimalDigits: 2,
+                      ).format(category.amount),
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

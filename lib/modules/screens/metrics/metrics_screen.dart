@@ -7,6 +7,7 @@ import 'package:nexo_finance/shared/services/offline/account_service.dart';
 import 'package:nexo_finance/shared/models/account_model.dart';
 import '../../../shared/widgets/custom_back_button.dart';
 import '../../../shared/widgets/type_chip.dart';
+import 'package:nexo_finance/modules/screens/metrics/account_detail_metrics_screen.dart';
 import 'widgets/category_pie_chart.dart';
 
 class MetricsScreen extends StatefulWidget {
@@ -286,65 +287,101 @@ class _MetricsScreenState extends State<MetricsScreen> {
           return Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: Container(
-              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: const Color(0xFF1E1E1E),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Colors.white10),
               ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: account.color.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          account.icon,
-                          color: account.color,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        account.name,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+              child: Material(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(20),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(20),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AccountDetailMetricsScreen(
+                          account: account,
+                          transactions: _filteredTransactions,
+                          periodLabel: _getPeriodLabel(),
                         ),
                       ),
-                      const Spacer(),
-                      Text(
-                        NumberFormat.currency(symbol: r'$').format(netBalance),
-                        style: TextStyle(
-                          color: netBalance >= 0 ? Colors.green : Colors.red,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: account.color.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                account.icon,
+                                color: account.color,
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              account.name,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              NumberFormat.currency(
+                                symbol: account.currency != null
+                                    ? NumberFormat.simpleCurrency(
+                                        name: account.currency,
+                                      ).currencySymbol
+                                    : r'$',
+                              ).format(netBalance),
+                              style: TextStyle(
+                                color: netBalance >= 0
+                                    ? Colors.green
+                                    : Colors.red,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(
+                              Icons.chevron_right,
+                              color: Colors.white54,
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                        const Divider(color: Colors.white10, height: 24),
+                        Row(
+                          children: [
+                            _buildMiniStat(
+                              AppLocalizations.of(context)!.incomeLabel,
+                              stats['income']!,
+                              Colors.green,
+                              account.currency,
+                            ),
+                            const SizedBox(width: 16),
+                            _buildMiniStat(
+                              AppLocalizations.of(context)!.expenseLabel,
+                              stats['expense']!,
+                              Colors.redAccent,
+                              account.currency,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  const Divider(color: Colors.white10, height: 24),
-                  Row(
-                    children: [
-                      _buildMiniStat(
-                        AppLocalizations.of(context)!.incomeLabel,
-                        stats['income']!,
-                        Colors.green,
-                      ),
-                      const SizedBox(width: 16),
-                      _buildMiniStat(
-                        AppLocalizations.of(context)!.expenseLabel,
-                        stats['expense']!,
-                        Colors.redAccent,
-                      ),
-                    ],
-                  ),
-                ],
+                ),
               ),
             ),
           );
@@ -353,7 +390,12 @@ class _MetricsScreenState extends State<MetricsScreen> {
     );
   }
 
-  Widget _buildMiniStat(String label, double amount, Color color) {
+  Widget _buildMiniStat(
+    String label,
+    double amount,
+    Color color,
+    String? currency,
+  ) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -361,7 +403,9 @@ class _MetricsScreenState extends State<MetricsScreen> {
           Text(label, style: TextStyle(color: Colors.grey[400], fontSize: 12)),
           const SizedBox(height: 2),
           Text(
-            NumberFormat.currency(symbol: r'$').format(amount),
+            currency != null
+                ? NumberFormat.simpleCurrency(name: currency).format(amount)
+                : NumberFormat.currency(symbol: r'$').format(amount),
             style: TextStyle(
               color: color.withOpacity(0.9),
               fontSize: 14,
@@ -373,28 +417,75 @@ class _MetricsScreenState extends State<MetricsScreen> {
     );
   }
 
+  String _getPeriodLabel() {
+    if (_selectedPeriod == 'Mensual') {
+      return DateFormat(
+        'MMMM yyyy',
+        AppLocalizations.of(context)!.localeName,
+      ).format(DateTime.now());
+    } else if (_selectedPeriod == 'Anual') {
+      return DateFormat('yyyy').format(DateTime.now());
+    } else if (_selectedPeriod == 'Diario') {
+      return DateFormat(
+        'EEE, d MMM yyyy',
+        AppLocalizations.of(context)!.localeName,
+      ).format(DateTime.now());
+    } else if (_selectedPeriod == 'Intervalo' && _customRange != null) {
+      final start = DateFormat(
+        'dd/MM',
+        AppLocalizations.of(context)!.localeName,
+      ).format(_customRange!.start);
+      final end = DateFormat(
+        'dd/MM',
+        AppLocalizations.of(context)!.localeName,
+      ).format(_customRange!.end);
+      return '$start - $end';
+    } else if (_selectedPeriod == 'Semanal') {
+      return AppLocalizations.of(context)!.weekly;
+    }
+    return '';
+  }
+
   Widget _buildCategoryChart({required bool isExpense}) {
-    // 1. Group transactions by category
+    // 1. Create account currency map
+    final Map<String, String> accountCurrencyMap = {
+      for (var a in _accounts) a.name.trim().toUpperCase(): a.currency ?? 'USD',
+    };
+
+    // 2. Group transactions by category AND currency
     final Map<String, CategoryChartData> stats = {};
 
     for (var t in _filteredTransactions.where(
       (t) => t.isExpense == isExpense,
     )) {
-      final rate = t.conversionRate > 0 ? t.conversionRate : 1.0;
-      final amount = t.amount * rate;
+      // Use raw amount because we are grouping by currency
+      final amount = t.amount;
 
       // Handle the case where category might not be standardized
       final catName = t.category.trim();
+      final accountKey = t.account.trim().toUpperCase();
+      final currency = accountCurrencyMap[accountKey] ?? 'USD';
+
+      // Composite key for grouping
+      final key = '${catName}_$currency';
 
       stats.update(
-        catName,
+        key,
         (val) => CategoryChartData(
+          // For existing entries, name is already set with currency?
+          // No, logic below sets name on creation. Updating needs to preserve it or update it?
+          // Since key includes currency, we are updating the same bucket.
           name: val.name,
           amount: val.amount + amount,
           color: val.color,
+          currency: currency,
         ), // Keep existing color
-        ifAbsent: () =>
-            CategoryChartData(name: catName, amount: amount, color: t.color),
+        ifAbsent: () => CategoryChartData(
+          name: '$catName ($currency)',
+          amount: amount,
+          color: t.color,
+          currency: currency,
+        ),
       );
     }
 
@@ -409,7 +500,7 @@ class _MetricsScreenState extends State<MetricsScreen> {
       );
     }
 
-    // 2. Convert to list and sort by amount descending
+    // 3. Convert to list and sort by amount descending
     final sortedStats = stats.values.toList()
       ..sort((a, b) => b.amount.compareTo(a.amount));
 
