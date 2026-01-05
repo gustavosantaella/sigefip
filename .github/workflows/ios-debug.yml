@@ -1,0 +1,55 @@
+name: iOS Debug Build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-ios:
+    name: Build iOS Debug IPA
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build iOS Debug
+        run: |
+          flutter build ios --debug --no-codesign
+
+      - name: Package IPA
+        run: |
+          mkdir Payload
+          mv build/ios/iphoneos/Runner.app Payload
+          zip -r Runner.ipa Payload
+
+      - name: Get Version
+        id: version
+        run: |
+          VERSION=$(grep 'version:' pubspec.yaml | sed 's/version: //')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Get Changelog
+        id: changelog
+        run: |
+          CHANGELOG=$(git log -1 --pretty=format:"%s")
+          echo "CHANGELOG=$CHANGELOG" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: "v${{ env.VERSION }}-debug-${{ github.run_number }}"
+          name: "${{ env.VERSION }} (debug)"
+          body: "${{ env.CHANGELOG }}"
+          artifacts: "Runner.ipa"
+          token: ${{ secrets.GITHUB_TOKEN }}
