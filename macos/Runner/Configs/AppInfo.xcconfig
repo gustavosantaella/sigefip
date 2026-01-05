@@ -11,4 +11,4 @@ PRODUCT_NAME = Nexo Finance
 PRODUCT_BUNDLE_IDENTIFIER = com.softlink.nexo_finance
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2025 com.softlink. All rights reserved.
