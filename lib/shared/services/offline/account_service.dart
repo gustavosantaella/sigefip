@@ -15,10 +15,19 @@ class AccountService {
   }
 
   static Future<List<Account>> getAccounts() async {
-    return await _storageService.getTypedArray<Account>(
+    final accounts = await _storageService.getTypedArray<Account>(
       _key,
       (json) => Account.fromMap(json),
     );
+    final defaultId = await getDefaultAccountId();
+    if (defaultId != null) {
+      for (var account in accounts) {
+        if (account.id == defaultId) {
+          account.isDefault = true;
+        }
+      }
+    }
+    return accounts;
   }
 
   static Future<void> deleteAccount(String? id) async {

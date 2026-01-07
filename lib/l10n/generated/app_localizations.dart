@@ -973,6 +973,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Saldo'**
   String get balance;
+
+  /// No description provided for @defaultCategories.
+  ///
+  /// In es, this message translates to:
+  /// **'Por Defecto'**
+  String get defaultCategories;
+
+  /// No description provided for @myCategories.
+  ///
+  /// In es, this message translates to:
+  /// **'Mis Categorías'**
+  String get myCategories;
 }
 
 class _AppLocalizationsDelegate

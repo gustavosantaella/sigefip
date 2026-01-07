@@ -458,4 +458,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get balance => 'Balance';
+
+  @override
+  String get defaultCategories => 'Default';
+
+  @override
+  String get myCategories => 'My Categories';
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexo_finance/modules/screens/transaction/transactions_screen.dart';
 import 'package:nexo_finance/l10n/generated/app_localizations.dart';
 import 'package:nexo_finance/shared/models/category_model.dart';
 import 'package:nexo_finance/shared/services/offline/category_service.dart';
@@ -18,6 +19,7 @@ class CategoriesScreen extends StatefulWidget {
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
   List<Category> categories = [];
+  String _selectedType = 'Egreso'; // Default to Expense
 
   @override
   void initState() {
@@ -41,6 +43,19 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Filter categories by selected type
+    final filteredCategories = categories
+        .where((c) => c.type == _selectedType)
+        .toList();
+
+    // Split into Default and User categories
+    final defaultCategories = filteredCategories
+        .where((c) => c.isDefault)
+        .toList();
+    final userCategories = filteredCategories
+        .where((c) => !c.isDefault)
+        .toList();
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -50,73 +65,125 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             // Header
             Padding(
               padding: const EdgeInsets.all(20),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CustomBackButton(),
-                  const SizedBox(width: 16),
-                  Text(
-                    AppLocalizations.of(context)!.categoriesTitle,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    children: [
+                      const CustomBackButton(),
+                      const SizedBox(width: 16),
+                      Text(
+                        AppLocalizations.of(context)!.categoriesTitle,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  // Income/Expense Type Selector
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TypeChip(
+                          label: AppLocalizations.of(context)!.expense,
+                          isSelected: _selectedType == 'Egreso',
+                          color: Colors.redAccent,
+                          onTap: () => setState(() => _selectedType = 'Egreso'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TypeChip(
+                          label: AppLocalizations.of(context)!.income,
+                          isSelected: _selectedType == 'Ingreso',
+                          color: Colors.green,
+                          onTap: () =>
+                              setState(() => _selectedType = 'Ingreso'),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-            // Grid
+
+            // Content
             Expanded(
-              child: GridView.builder(
-                padding: const EdgeInsets.all(20),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1.5,
-                ),
-                itemCount: categories.length,
-                itemBuilder: (context, index) {
-                  final category = categories[index];
-                  return GestureDetector(
-                    onLongPress: category.isDefault
-                        ? null
-                        : () => _confirmDelete(context, category),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1E1E1E),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.white10),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: category.color.withOpacity(0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              category.icon,
-                              color: category.color,
-                              size: 32,
-                            ),
+              child: CustomScrollView(
+                slivers: [
+                  // Default Categories Section
+                  if (defaultCategories.isNotEmpty) ...[
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Text(
+                          AppLocalizations.of(
+                            context,
+                          )!.defaultCategories, // You'll need to add this key
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
                           ),
-                          const SizedBox(height: 12),
-                          Text(
-                            category.name,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
-                  );
-                },
+                    SliverGrid(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            childAspectRatio: 1.5,
+                          ),
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        return _buildCategoryCard(
+                          context,
+                          defaultCategories[index],
+                        );
+                      }, childCount: defaultCategories.length),
+                    ),
+                    const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                  ],
+
+                  // User Categories Section
+                  if (userCategories.isNotEmpty) ...[
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Text(
+                          AppLocalizations.of(
+                            context,
+                          )!.myCategories, // You'll need to add this key
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SliverGrid(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            childAspectRatio: 1.5,
+                          ),
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        return _buildCategoryCard(
+                          context,
+                          userCategories[index],
+                        );
+                      }, childCount: userCategories.length),
+                    ),
+                    const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                  ],
+                ],
               ),
             ),
           ],
@@ -137,6 +204,57 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         },
         backgroundColor: const Color(0xFF6C63FF),
         child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildCategoryCard(BuildContext context, Category category) {
+    return GestureDetector(
+      onTap: () {
+        // Navigate to TransactionsScreen with filter
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TransactionsScreen(
+              initialCategoryFilter: category.name,
+              initialTypeFilter: category.type == 'Ingreso'
+                  ? 'Ingresos'
+                  : 'Egresos',
+            ),
+          ),
+        );
+      },
+      onLongPress: category.isDefault
+          ? null
+          : () => _confirmDelete(context, category),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E1E1E),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white10),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: category.color.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(category.icon, color: category.color, size: 32),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              category.name,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
