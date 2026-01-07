@@ -15,7 +15,10 @@ class Account {
     required this.currency,
     required this.icon,
     required this.color,
+    this.isDefault = false,
   });
+
+  bool isDefault;
 
   Map<String, dynamic> toMap() {
     return {

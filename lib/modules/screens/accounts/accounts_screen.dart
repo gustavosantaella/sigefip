@@ -93,6 +93,23 @@ class _AccountsScreenState extends State<AccountsScreen> {
                     borderRadius: BorderRadius.circular(20),
                     rightOptions: [
                       SlideAction<Account>(
+                        icon: Icons.star,
+                        color: Colors.amber,
+                        onPressed: (account) async {
+                          await AccountService.setDefaultAccountId(account.id!);
+                          loadAccounts();
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Cuenta "${account.name}" marcada por defecto',
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                      SlideAction<Account>(
                         icon: Icons.delete,
                         color: Colors.red,
                         onPressed: (account) async {
@@ -120,7 +137,9 @@ class _AccountsScreenState extends State<AccountsScreen> {
                       decoration: BoxDecoration(
                         color: const Color(0xFF1E1E1E),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.white10),
+                        border: account.isDefault
+                            ? Border.all(color: Colors.yellow, width: 2)
+                            : Border.all(color: Colors.white10),
                       ),
                       child: Row(
                         children: [
