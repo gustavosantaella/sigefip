@@ -23,11 +23,16 @@ class UserService {
     await StorageService.instance.write(_userKey, userData);
   }
 
-  static Future<void> updateUser({String? name, String? email}) async {
+  static Future<void> updateUser({
+    String? name,
+    String? email,
+    String? imagePath,
+  }) async {
     final User? currentUser = await getUser();
     final User updatedUser = User(
       name: name ?? currentUser?.name,
       email: email ?? currentUser?.email,
+      imagePath: imagePath ?? currentUser?.imagePath,
     );
     await saveUser(updatedUser);
   }

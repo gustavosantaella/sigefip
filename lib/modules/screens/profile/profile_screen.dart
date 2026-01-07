@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:nexo_finance/l10n/generated/app_localizations.dart';
 import 'package:nexo_finance/shared/models/user_model.dart';
 import 'package:nexo_finance/shared/models/account_model.dart';
@@ -148,6 +150,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      await UserService.updateUser(imagePath: image.path);
+      await _loadData();
+    }
+  }
+
   Future<void> _launchInstagram() async {
     final Uri url = Uri.parse('https://www.instagram.com/nexo.software.ve/');
     try {
@@ -203,22 +215,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Center(
                 child: Column(
                   children: [
-                    Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.purple.shade400,
-                            Colors.blue.shade400,
-                          ],
+                    GestureDetector(
+                      onTap: _pickImage,
+                      child: Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _user?.imagePath != null
+                              ? null
+                              : Colors.purple.shade400,
+                          gradient: _user?.imagePath != null
+                              ? null
+                              : LinearGradient(
+                                  colors: [
+                                    Colors.purple.shade400,
+                                    Colors.blue.shade400,
+                                  ],
+                                ),
+                          image: _user?.imagePath != null
+                              ? DecorationImage(
+                                  image: FileImage(File(_user!.imagePath!)),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
                         ),
-                      ),
-                      child: const Icon(
-                        Icons.person,
-                        color: Colors.white,
-                        size: 50,
+                        child: _user?.imagePath == null
+                            ? const Icon(
+                                Icons.person,
+                                color: Colors.white,
+                                size: 50,
+                              )
+                            : null,
                       ),
                     ),
                     const SizedBox(height: 16),
