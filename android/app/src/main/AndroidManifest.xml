@@ -36,6 +36,9 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-7887143920740339~6933132406"/>
     </application>
+            <!-- Using Test App ID for development to avoid ID mismatch with Test Ad Units -->
+            <!-- Real App ID: ca-app-pub-7887143920740339~6933132406 -->
+
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
          https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.

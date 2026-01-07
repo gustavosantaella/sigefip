@@ -13,6 +13,7 @@ class AdService {
 
   AppOpenAd? _appOpenAd;
   bool _isShowingAd = false;
+  bool _isFirstLoad = true;
 
   // Real Ad Unit ID provided by user
   final String _appOpenAdUnitId = AdHelper.appOpenAdUnitId;
@@ -30,6 +31,10 @@ class AdService {
         onAdLoaded: (ad) {
           debugPrint('App Open Ad loaded');
           _appOpenAd = ad;
+          if (_isFirstLoad) {
+            _isFirstLoad = false;
+            showAppOpenAdIfAvailable();
+          }
         },
         onAdFailedToLoad: (error) {
           debugPrint('App Open Ad failed to load: $error');
