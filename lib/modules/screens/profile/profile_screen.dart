@@ -10,6 +10,8 @@ import 'package:nexo_finance/shared/notifiers/data_sync_notifier.dart';
 import 'widgets/stat_card.dart';
 import 'widgets/profile_menu_item.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -143,6 +145,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context)!.exportComingSoon)),
       );
+    }
+  }
+
+  Future<void> _launchInstagram() async {
+    final Uri url = Uri.parse('https://www.instagram.com/nexo.software.ve/');
+    try {
+      if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+        throw Exception('Could not launch $url');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No se pudo abrir Instagram')),
+        );
+      }
     }
   }
 
@@ -401,6 +418,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: Colors.red,
                     ),
                   ),
+                ),
+              ),
+              const SizedBox(height: 30),
+
+              // Instagram Link
+              Center(
+                child: IconButton(
+                  onPressed: _launchInstagram,
+                  icon: const FaIcon(FontAwesomeIcons.instagram),
+                  color: Colors.pinkAccent,
+                  iconSize: 40,
+                  tooltip: 'Síguenos en Instagram',
                 ),
               ),
               const SizedBox(height: 20),
