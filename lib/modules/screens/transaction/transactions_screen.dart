@@ -1,9 +1,9 @@
-import 'dart:io';
 import 'package:nexo_finance/l10n/generated/app_localizations.dart';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:nexo_finance/shared/services/online/ia_service.dart';
 import 'package:nexo_finance/shared/models/account_model.dart';
 import 'package:nexo_finance/shared/models/transaction_model.dart';
@@ -20,6 +20,7 @@ import '../../../shared/widgets/custom_text_field.dart';
 import '../../../shared/widgets/type_chip.dart';
 import '../../../shared/widgets/banner_ad_widget.dart';
 import '../../../shared/helpers/ad_helper.dart';
+import '../../../shared/widgets/universal_image.dart';
 
 class TransactionsScreen extends StatefulWidget {
   final String? initialCategoryFilter;
@@ -445,8 +446,8 @@ class _TransactionDetailSheet extends StatelessWidget {
             const SizedBox(height: 12),
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.file(
-                File(transaction.imagePath!),
+              child: UniversalImage(
+                path: transaction.imagePath!,
                 fit: BoxFit.cover,
                 width: double.infinity,
               ),
@@ -516,7 +517,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _conversionRateController =
       TextEditingController();
-  File? _image;
+  XFile? _image;
   bool _isLoadingAI = false;
 
   List<Category> _allCategories = [];
@@ -585,7 +586,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
 
     if (image != null) {
       setState(() {
-        _image = File(image.path);
+        _image = image;
         _isLoadingAI = true;
       });
 
@@ -755,8 +756,8 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                     : _image != null
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.file(
-                          _image!,
+                        child: UniversalImage(
+                          path: _image!.path,
                           fit: BoxFit.cover,
                           width: double.infinity,
                         ),
