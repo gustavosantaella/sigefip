@@ -32,20 +32,8 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Decode Keystore
-        run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
-          
-          echo "storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}" > android/key.properties
-          echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
-          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
-          echo "storeFile=upload-keystore.jks" >> android/key.properties
-
       - name: Build Android APK
-        run: flutter build apk --release
-
-      - name: Build Android AppBundle
-        run: flutter build appbundle --release --no-tree-shake-icons
+        run: flutter build apk --debug
 
       - name: Build iOS Debug
         run: flutter build ios --debug --no-codesign
@@ -72,7 +60,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: "v${{ env.VERSION }}-${{ github.run_number }}"
-          name: "${{ env.VERSION }} (Release)"
+          name: "${{ env.VERSION }} (Debug)"
           body: "${{ env.CHANGELOG }}"
-          artifacts: "Runner.ipa,build/app/outputs/flutter-apk/app-release.apk,build/app/outputs/bundle/release/app-release.aab"
+          artifacts: "Runner.ipa,build/app/outputs/flutter-apk/app-debug.apk"
           token: ${{ secrets.GITHUB_TOKEN }}
