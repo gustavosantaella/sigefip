@@ -460,4 +460,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get balance => 'Saldo';
+
+  @override
+  String get defaultCategories => 'Por Defecto';
+
+  @override
+  String get myCategories => 'Mis Categorías';
 }

@@ -146,5 +146,7 @@
     "onboardingTip6": "The best time to start is now!",
     "paymentMethodsTitle": "Payment Methods",
     "comingSoon": "This feature will be available soon",
-    "balance": "Balance"
+    "balance": "Balance",
+    "defaultCategories": "Default",
+    "myCategories": "My Categories"
 }

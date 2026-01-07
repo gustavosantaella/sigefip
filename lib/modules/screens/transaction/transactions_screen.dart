@@ -22,7 +22,14 @@ import '../../../shared/widgets/banner_ad_widget.dart';
 import '../../../shared/helpers/ad_helper.dart';
 
 class TransactionsScreen extends StatefulWidget {
-  const TransactionsScreen({super.key});
+  final String? initialCategoryFilter;
+  final String? initialTypeFilter;
+
+  const TransactionsScreen({
+    super.key,
+    this.initialCategoryFilter,
+    this.initialTypeFilter,
+  });
 
   @override
   State<TransactionsScreen> createState() => _TransactionsScreenState();
@@ -31,13 +38,20 @@ class TransactionsScreen extends StatefulWidget {
 class _TransactionsScreenState extends State<TransactionsScreen> {
   List<Transaction> transactions = [];
   List<Transaction> filteredTransactions = [];
-  String _selectedFilter = 'Todas'; // Todas, Ingresos, Egresos
+  late String _selectedFilter; // Todas, Ingresos, Egresos
+  String? _categoryFilter;
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    _selectedFilter = widget.initialTypeFilter ?? 'Todas';
+    _categoryFilter = widget.initialCategoryFilter;
+    if (_categoryFilter != null) {
+      _searchController.text = _categoryFilter!;
+      _searchQuery = _categoryFilter!;
+    }
     loadTransactions();
   }
 
@@ -54,6 +68,14 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         if (_selectedFilter == 'Ingresos') matchesType = !t.isExpense;
         if (_selectedFilter == 'Egresos') matchesType = t.isExpense;
 
+        // Filter by Category
+        bool matchesCategory = true;
+        if (_categoryFilter != null) {
+          matchesCategory = t.category == _categoryFilter;
+          // If category filter is active, we might want to ignore the type filter or ensure they match
+          // matchesType = true; // Uncomment if category filter overrides type
+        }
+
         // Filter by Search Query
         bool matchesSearch = true;
         if (_searchQuery.isNotEmpty) {
@@ -65,7 +87,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               (t.note?.toLowerCase().contains(query) ?? false);
         }
 
-        return matchesType && matchesSearch;
+        return matchesType && matchesSearch && matchesCategory;
       }).toList();
       // Sort by date descending
       filteredTransactions.sort((a, b) => b.date.compareTo(a.date));
@@ -141,6 +163,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                         style: const TextStyle(color: Colors.white),
                         onChanged: (value) {
                           _searchQuery = value;
+                          // If user manually types, clear the strict category filter to allow wider search
+                          if (_categoryFilter != null &&
+                              value != _categoryFilter) {
+                            _categoryFilter = null;
+                          }
                           _applyFilters();
                         },
                         decoration: InputDecoration(
@@ -150,12 +177,46 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                           )!.searchPlaceholder,
                           hintStyle: const TextStyle(color: Colors.grey),
                           border: InputBorder.none,
+                          suffixIcon: _categoryFilter != null
+                              ? IconButton(
+                                  icon: const Icon(
+                                    Icons.clear,
+                                    color: Colors.grey,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _categoryFilter = null;
+                                      _searchController.clear();
+                                      _searchQuery = '';
+                                      _applyFilters();
+                                    });
+                                  },
+                                )
+                              : null,
                         ),
                       ),
                     ),
                     const SizedBox(height: 20),
 
-                    const SizedBox(height: 20),
+                    if (_categoryFilter != null) ...[
+                      Chip(
+                        label: Text('Categoría: $_categoryFilter'),
+                        deleteIcon: const Icon(Icons.close, size: 18),
+                        onDeleted: () {
+                          setState(() {
+                            _categoryFilter = null;
+                            _searchController.clear();
+                            _searchQuery = '';
+                            _applyFilters();
+                          });
+                        },
+                        backgroundColor: const Color(0xFF6C63FF),
+                        labelStyle: const TextStyle(color: Colors.white),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+
+                    const SizedBox(height: 10),
 
                     // Banner Ad 1
                     Center(
