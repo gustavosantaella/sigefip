@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../helpers/ad_helper.dart';
@@ -19,11 +20,13 @@ class AdService {
   final String _appOpenAdUnitId = AdHelper.appOpenAdUnitId;
 
   Future<void> initialize() async {
+    if (kIsWeb) return;
     await MobileAds.instance.initialize();
     loadAppOpenAd();
   }
 
   void loadAppOpenAd() {
+    if (kIsWeb) return;
     AppOpenAd.load(
       adUnitId: _appOpenAdUnitId,
       request: const AdRequest(),
@@ -44,6 +47,7 @@ class AdService {
   }
 
   void showAppOpenAdIfAvailable() {
+    if (kIsWeb) return;
     if (_appOpenAd == null || _isShowingAd) {
       debugPrint('Tried to show ad but it was null or already showing.');
       loadAppOpenAd();

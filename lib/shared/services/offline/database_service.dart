@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:path/path.dart';
 
 class DatabaseService {
@@ -14,13 +16,24 @@ class DatabaseService {
   }
 
   Future<Database> _initDatabase() async {
-    String path = join(await getDatabasesPath(), 'nexo_finance.db');
-    return await openDatabase(
-      path,
-      version: 7,
-      onCreate: _onCreate,
-      onUpgrade: _onUpgrade,
-    );
+    if (kIsWeb) {
+      // Use the ffi web factory
+      databaseFactory = databaseFactoryFfiWeb;
+      return await openDatabase(
+        'nexo_finance.db',
+        version: 7,
+        onCreate: _onCreate,
+        onUpgrade: _onUpgrade,
+      );
+    } else {
+      String path = join(await getDatabasesPath(), 'nexo_finance.db');
+      return await openDatabase(
+        path,
+        version: 7,
+        onCreate: _onCreate,
+        onUpgrade: _onUpgrade,
+      );
+    }
   }
 
   Future<void> _onCreate(Database db, int version) async {

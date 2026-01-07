@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 class AdHelper {
@@ -40,10 +39,13 @@ class AdHelper {
   // ==========================================
 
   static String get appOpenAdUnitId {
+    if (kIsWeb) {
+      return "";
+    }
     if (kReleaseMode) {
       return _realAppOpen;
     } else {
-      return Platform.isAndroid
+      return defaultTargetPlatform == TargetPlatform.android
           ? _testAppOpenManager
           : 'ca-app-pub-3940256099942544/5662855259'; // iOS App Open Test ID
     }
@@ -74,11 +76,15 @@ class AdHelper {
   }
 
   static String _getBannerId(String realId) {
+    if (kIsWeb) {
+      // Return a test ID for web or handle differently
+      return "";
+    }
     if (kReleaseMode) {
       return realId;
     } else {
       // 2934735716 is banner test id for iOS, 6300978111 for Android
-      return Platform.isAndroid
+      return defaultTargetPlatform == TargetPlatform.android
           ? _testBanner
           : 'ca-app-pub-3940256099942544/2934735716';
     }

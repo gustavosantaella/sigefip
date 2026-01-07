@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nexo_finance/l10n/generated/app_localizations.dart';
@@ -14,6 +13,7 @@ import 'widgets/profile_menu_item.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../shared/widgets/universal_image.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -233,20 +233,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     Colors.blue.shade400,
                                   ],
                                 ),
-                          image: _user?.imagePath != null
-                              ? DecorationImage(
-                                  image: FileImage(File(_user!.imagePath!)),
-                                  fit: BoxFit.cover,
-                                )
-                              : null,
                         ),
-                        child: _user?.imagePath == null
-                            ? const Icon(
+                        child: _user?.imagePath != null
+                            ? ClipOval(
+                                child: UniversalImage(
+                                  path: _user!.imagePath!,
+                                  fit: BoxFit.cover,
+                                  width: 100,
+                                  height: 100,
+                                ),
+                              )
+                            : const Icon(
                                 Icons.person,
                                 color: Colors.white,
                                 size: 50,
-                              )
-                            : null,
+                              ),
                       ),
                     ),
                     const SizedBox(height: 16),

@@ -111,77 +111,82 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       final page = _pages[index];
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 40),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(30),
-                              decoration: BoxDecoration(
-                                color: page.color.withOpacity(0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: index == 0
-                                  ? Image.asset(
-                                      'lib/assets/img/logo.png',
-                                      width: 100,
-                                      height: 100,
-                                    )
-                                  : Icon(
-                                      page.icon,
-                                      size: 100,
-                                      color: page.color,
-                                    ),
-                            ),
-                            const SizedBox(height: 50),
-                            Text(
-                              page.title,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            Text(
-                              page.description,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.grey[400],
-                                fontSize: 16,
-                                height: 1.5,
-                              ),
-                            ),
-                            const SizedBox(height: 40),
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.05),
-                                borderRadius: BorderRadius.circular(15),
-                                border: Border.all(color: Colors.white10),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.lightbulb_outline,
-                                    color: page.color,
-                                    size: 20,
+                        child: Center(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(30),
+                                  decoration: BoxDecoration(
+                                    color: page.color.withOpacity(0.1),
+                                    shape: BoxShape.circle,
                                   ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      page.tip,
-                                      style: TextStyle(
-                                        color: Colors.grey[300],
-                                        fontSize: 13,
-                                        fontStyle: FontStyle.italic,
+                                  child: index == 0
+                                      ? Image.asset(
+                                          'lib/assets/img/logo.png',
+                                          width: 100,
+                                          height: 100,
+                                        )
+                                      : Icon(
+                                          page.icon,
+                                          size: 100,
+                                          color: page.color,
+                                        ),
+                                ),
+                                const SizedBox(height: 50),
+                                Text(
+                                  page.title,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                Text(
+                                  page.description,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.grey[400],
+                                    fontSize: 16,
+                                    height: 1.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 40),
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.05),
+                                    borderRadius: BorderRadius.circular(15),
+                                    border: Border.all(color: Colors.white10),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.lightbulb_outline,
+                                        color: page.color,
+                                        size: 20,
                                       ),
-                                    ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          page.tip,
+                                          style: TextStyle(
+                                            color: Colors.grey[300],
+                                            fontSize: 13,
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       );
                     },
