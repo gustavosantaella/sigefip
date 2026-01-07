@@ -261,7 +261,7 @@ class _AddAccountFormState extends State<AddAccountForm> {
           CustomTextField(
             controller: _balanceController,
             label: AppLocalizations.of(context)!.initialBalanceLabel,
-            keyboardType: TextInputType.number,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
             prefixText: '\$ ',
           ),
           const SizedBox(height: 16),

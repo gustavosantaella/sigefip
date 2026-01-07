@@ -407,7 +407,9 @@ class _AlertsScreenState extends State<AlertsScreen> {
                     // Max Amount
                     TextField(
                       controller: amountController,
-                      keyboardType: TextInputType.number,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       style: const TextStyle(color: Colors.white),
                       decoration: const InputDecoration(
                         labelText: 'Monto Máximo',
