@@ -9,6 +9,7 @@ class TransactionCard extends StatelessWidget {
   final Color color;
   final IconData icon;
   final bool isExpense;
+  final String? currencySymbol;
 
   const TransactionCard({
     super.key,
@@ -20,6 +21,7 @@ class TransactionCard extends StatelessWidget {
     required this.color,
     required this.icon,
     required this.isExpense,
+    this.currencySymbol,
   });
 
   @override
@@ -68,7 +70,7 @@ class TransactionCard extends StatelessWidget {
             ),
           ),
           Text(
-            amount,
+            '${currencySymbol ?? '\$'}${amount}',
             style: TextStyle(
               color: isExpense
                   ? const Color(0xFFF44336)

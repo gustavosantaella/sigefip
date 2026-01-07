@@ -424,6 +424,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // Instagram Link
               Center(
+                child: Text(
+                  "Contact us",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              Center(
                 child: IconButton(
                   onPressed: _launchInstagram,
                   icon: const FaIcon(FontAwesomeIcons.instagram),

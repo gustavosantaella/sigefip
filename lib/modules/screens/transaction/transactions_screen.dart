@@ -251,6 +251,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                                           ? Icons.remove
                                           : Icons.add),
                                   isExpense: transaction.isExpense,
+                                  currencySymbol: transaction.currencySymbol,
                                 ),
                               ),
                             ),
@@ -353,7 +354,7 @@ class _TransactionDetailSheet extends StatelessWidget {
           _buildDetailRow(
             Icons.money,
             AppLocalizations.of(context)!.amountLabel,
-            '${transaction.isExpense ? "-" : "+"}\$ ${transaction.amount}',
+            '${transaction.isExpense ? "-" : "+"}${transaction.currencySymbol ?? "\$"} ${transaction.amount}',
             textColor: transaction.isExpense ? Colors.redAccent : Colors.green,
           ),
           if (transaction.conversionRate != 1.0)

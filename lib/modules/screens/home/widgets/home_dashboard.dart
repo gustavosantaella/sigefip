@@ -133,6 +133,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                       transaction.icon ??
                       (transaction.isExpense ? Icons.remove : Icons.add),
                   isExpense: transaction.isExpense,
+                  currencySymbol: transaction.currencySymbol,
                 ),
               ),
             ),

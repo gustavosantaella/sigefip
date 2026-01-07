@@ -2,6 +2,7 @@ import 'package:nexo_finance/shared/models/category_model.dart';
 import 'package:nexo_finance/shared/models/transaction_model.dart';
 import 'package:nexo_finance/shared/services/offline/category_service.dart';
 import 'package:nexo_finance/shared/services/offline/storage_service.dart';
+import 'package:nexo_finance/shared/services/offline/database_service.dart'; // Added for direct DB access
 import 'package:nexo_finance/shared/notifiers/data_sync_notifier.dart';
 import 'package:nexo_finance/shared/services/offline/account_service.dart';
 import 'package:nexo_finance/shared/services/offline/alert_service.dart';
@@ -39,10 +40,18 @@ class TransactionService {
   }
 
   static Future<List<Transaction>> getTransactions() async {
-    return await storageService.getTypedArray<Transaction>(
-      "transactions",
-      (json) => Transaction.fromMap(json),
-    );
+    final db = await DatabaseService.instance.database;
+    final List<Map<String, dynamic>> results = await db.rawQuery('''
+      SELECT t.*, a.currency as currencySymbol
+      FROM transactions t
+      LEFT JOIN accounts a ON t.account = a.name
+    ''');
+
+    return results.map((map) {
+      final Map<String, dynamic> mutableMap = Map.from(map);
+      mutableMap['isExpense'] = mutableMap['isExpense'] == 1;
+      return Transaction.fromMap(mutableMap);
+    }).toList();
   }
 
   static Future<void> delete(String? id) async {

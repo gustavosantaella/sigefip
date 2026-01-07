@@ -13,6 +13,7 @@ class Transaction {
   double conversionRate;
   final String? note;
   final String? imagePath;
+  String? currencySymbol;
 
   Transaction({
     this.id,
@@ -27,6 +28,7 @@ class Transaction {
     this.conversionRate = 1.0,
     this.note,
     this.imagePath,
+    this.currencySymbol,
   }) : date = date ?? DateTime.now();
 
   Map<String, dynamic> toMap() {
@@ -62,6 +64,7 @@ class Transaction {
       conversionRate: (map['conversionRate'] as num?)?.toDouble() ?? 1.0,
       note: map['note'],
       imagePath: map['imagePath'],
+      currencySymbol: map['currencySymbol'],
     );
   }
 }
