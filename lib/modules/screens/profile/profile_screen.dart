@@ -327,6 +327,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 title: AppLocalizations.of(context)!.settingsLabel,
                 onTap: () => Navigator.pushNamed(context, '/settings'),
               ),
+              const SizedBox(height: 12),
+              ProfileMenuItem(
+                icon: Icons.login,
+                title: 'Iniciar Sesión', // TODO: Add to l10n
+                onTap: () => Navigator.pushNamed(context, '/login'),
+              ),
               const SizedBox(height: 30),
 
               // Information Section

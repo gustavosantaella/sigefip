@@ -7,6 +7,9 @@ class CustomTextField extends StatelessWidget {
   final int maxLines;
   final String? prefixText;
   final String? hintText;
+  final bool obscureText;
+  final Widget? suffixIcon;
+  final ValueChanged<String>? onChanged;
 
   const CustomTextField({
     super.key,
@@ -16,6 +19,9 @@ class CustomTextField extends StatelessWidget {
     this.maxLines = 1,
     this.prefixText,
     this.hintText,
+    this.obscureText = false,
+    this.suffixIcon,
+    this.onChanged,
   });
 
   @override
@@ -24,6 +30,8 @@ class CustomTextField extends StatelessWidget {
       controller: controller,
       keyboardType: keyboardType,
       maxLines: maxLines,
+      obscureText: obscureText,
+      onChanged: onChanged,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
@@ -32,6 +40,7 @@ class CustomTextField extends StatelessWidget {
         hintStyle: TextStyle(color: Colors.grey[600]),
         prefixText: prefixText,
         prefixStyle: const TextStyle(color: Colors.white),
+        suffixIcon: suffixIcon,
         filled: true,
         fillColor: Colors.white.withOpacity(0.05),
         border: OutlineInputBorder(

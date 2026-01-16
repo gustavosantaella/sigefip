@@ -14,6 +14,8 @@ import 'package:nexo_finance/shared/services/notification_service.dart';
 import 'package:nexo_finance/modules/screens/profile/profile_screen.dart';
 import 'package:nexo_finance/modules/screens/profile/personal_info_screen.dart';
 import 'package:nexo_finance/modules/screens/settings/settings_screen.dart';
+import 'package:nexo_finance/modules/screens/auth/login_screen.dart';
+import 'package:nexo_finance/modules/screens/auth/register_screen.dart';
 import 'package:nexo_finance/shared/services/ad_service.dart';
 
 import 'package:intl/date_symbol_data_local.dart';
@@ -90,6 +92,8 @@ class MyApp extends StatelessWidget {
             '/profile': (context) => const ProfileScreen(),
             '/personal-info': (context) => const PersonalInfoScreen(),
             '/settings': (context) => const SettingsScreen(),
+            '/login': (context) => const LoginScreen(),
+            '/register': (context) => const RegisterScreen(),
           },
         );
       },
