@@ -138,7 +138,7 @@ class _AccountsSectionState extends State<AccountsSection> {
   }
 }
 
-class _AccountCard extends StatelessWidget {
+class _AccountCard extends StatefulWidget {
   final Color color;
   final String title;
   final String balance;
@@ -154,12 +154,19 @@ class _AccountCard extends StatelessWidget {
   });
 
   @override
+  State<_AccountCard> createState() => _AccountCardState();
+}
+
+class _AccountCardState extends State<_AccountCard> {
+  bool _isBalanceVisible = false;
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       width: 280,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: color,
+        color: widget.color,
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
@@ -170,10 +177,10 @@ class _AccountCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                currency,
+                widget.currency,
                 style: const TextStyle(color: Colors.white70, fontSize: 14),
               ),
-              if (isSelected)
+              if (widget.isSelected)
                 Container(
                   width: 24,
                   height: 24,
@@ -194,7 +201,7 @@ class _AccountCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                title,
+                widget.title,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -209,13 +216,32 @@ class _AccountCard extends StatelessWidget {
                 style: TextStyle(color: Colors.white70, fontSize: 11),
               ),
               const SizedBox(height: 2),
-              Text(
-                balance,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
+              Row(
+                children: [
+                  Text(
+                    _isBalanceVisible ? widget.balance : '******',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isBalanceVisible = !_isBalanceVisible;
+                      });
+                    },
+                    child: Icon(
+                      _isBalanceVisible
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: Colors.white70,
+                      size: 20,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
