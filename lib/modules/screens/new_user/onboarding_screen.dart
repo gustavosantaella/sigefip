@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nexo_finance/l10n/generated/app_localizations.dart';
 import 'package:nexo_finance/shared/services/offline/storage_service.dart';
+import 'package:flutter/foundation.dart';
+import 'package:nexo_finance/shared/widgets/pwa_install_prompt.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -12,6 +14,26 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkPwaInstall();
+    });
+  }
+
+  void _checkPwaInstall() {
+    if (kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.iOS ||
+            defaultTargetPlatform == TargetPlatform.android)) {
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.transparent,
+        builder: (context) => const PwaInstallPrompt(),
+      );
+    }
+  }
 
   List<OnboardingData> get _pages => [
     OnboardingData(

@@ -689,7 +689,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
           CustomTextField(
             controller: _amountController,
             label: AppLocalizations.of(context)!.amountLabel,
-            keyboardType: TextInputType.number,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
             prefixText: '\$ ',
           ),
           const SizedBox(height: 16),
@@ -731,7 +731,9 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
             CustomTextField(
               controller: _conversionRateController,
               label: AppLocalizations.of(context)!.conversionRateLabel,
-              keyboardType: TextInputType.number,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
             ),
             const SizedBox(height: 16),
             Text(

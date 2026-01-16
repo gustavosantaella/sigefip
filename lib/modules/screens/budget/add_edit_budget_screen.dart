@@ -41,6 +41,7 @@ class _AddEditBudgetScreenState extends State<AddEditBudgetScreen> {
     'Semestral',
     'Anual',
     'Personalizado',
+    'Único',
   ];
 
   // TODO: Load these from CategoryService
@@ -130,7 +131,9 @@ class _AddEditBudgetScreenState extends State<AddEditBudgetScreen> {
               CustomTextField(
                 controller: _amountController,
                 label: 'Monto Objetivo',
-                keyboardType: TextInputType.number,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
               ),
               const SizedBox(height: 16),
 
@@ -215,6 +218,28 @@ class _AddEditBudgetScreenState extends State<AddEditBudgetScreen> {
                 const SizedBox(height: 16),
               ],
 
+              if (_concurrency == 'Único') ...[
+                OutlinedButton(
+                  onPressed: () async {
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate: _startDate ?? DateTime.now(),
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime(2030),
+                    );
+                    if (picked != null) {
+                      setState(() => _startDate = picked);
+                    }
+                  },
+                  child: Text(
+                    _startDate == null
+                        ? 'Seleccionar Fecha de Ejecución'
+                        : 'Fecha: ${_startDate.toString().split(' ')[0]}',
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+
               CustomTextField(
                 controller: _noteController,
                 label: 'Nota (Opcional)',
@@ -238,6 +263,15 @@ class _AddEditBudgetScreenState extends State<AddEditBudgetScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Por favor completa los campos requeridos'),
+        ),
+      );
+      return;
+    }
+
+    if (_concurrency == 'Único' && _startDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor selecciona la fecha de ejecución'),
         ),
       );
       return;

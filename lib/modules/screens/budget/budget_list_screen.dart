@@ -386,18 +386,35 @@ class _BudgetListScreenState extends State<BudgetListScreen> {
                     );
 
                     await TransactionService.store(transaction);
-                    await BudgetService.completeAndCloneBudget(
-                      budget,
-                      executedAmount: budget.amount,
-                    );
+
+                    if (budget.concurrency == 'Unico' ||
+                        budget.concurrency == 'Único') {
+                      await BudgetService.deleteBudget(budget.id);
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Ejecutado correctamente (Presupuesto único eliminado)',
+                            ),
+                          ),
+                        );
+                      }
+                    } else {
+                      await BudgetService.completeAndCloneBudget(
+                        budget,
+                        executedAmount: budget.amount,
+                      );
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Ejecutado correctamente'),
+                          ),
+                        );
+                      }
+                    }
 
                     if (mounted) {
                       Navigator.pop(ctx);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Ejecutado correctamente'),
-                        ),
-                      );
                     }
                     _loadBudgets();
                   },
