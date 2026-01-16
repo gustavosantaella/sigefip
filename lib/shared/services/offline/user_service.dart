@@ -40,4 +40,16 @@ class UserService {
   static Future<void> clearUser() async {
     await StorageService.instance.delete(_userKey);
   }
+
+  static Future<void> setToken(String token) async {
+    await StorageService.instance.write('token', token);
+  }
+
+  static Future<String?> getToken() async {
+    return await StorageService.instance.read('token');
+  }
+
+  static Future<void> clearToken() async {
+    await StorageService.instance.delete('token');
+  }
 }

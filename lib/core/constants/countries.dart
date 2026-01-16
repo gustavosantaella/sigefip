@@ -1,0 +1,21 @@
+const List<Map<String, String>> countries = [
+  {"label": "Venezuela", "code": "VE"},
+  {"label": "Colombia", "code": "CO"},
+  {"label": "Peru", "code": "PE"},
+  {"label": "Bolivia", "code": "BO"},
+  {"label": "Ecuador", "code": "EC"},
+  {"label": "Chile", "code": "CL"},
+  {"label": "Argentina", "code": "AR"},
+  {"label": "Uruguay", "code": "UY"},
+  {"label": "Paraguay", "code": "PY"},
+  {"label": "Brazil", "code": "BR"},
+  {"label": "Guyana", "code": "GY"},
+  {"label": "Suriname", "code": "SR"},
+  {"label": "United States", "code": "US"},
+  {"label": "Mexico", "code": "MX"},
+  {"label": "Spain", "code": "ES"},
+  {"label": "Panama", "code": "PA"},
+  {"label": "Dominican Republic", "code": "DO"},
+  {"label": "Costa Rica", "code": "CR"},
+  // Add more as needed
+];

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexo_finance/shared/services/online/auth_service.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 
@@ -15,8 +16,8 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
   bool _obscurePassword = true;
 
-  void _login() {
-    // TODO: Implement actual login logic
+  void _login() async {
+    await AuthService.login(_emailController.text, _passwordController.text);
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Login simulated')));
